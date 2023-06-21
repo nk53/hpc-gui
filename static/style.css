@@ -1,0 +1,50 @@
+body {
+    font-family: Helvetica, sans-serif;
+}
+
+.main, .sidebar {
+    display: block;
+    width: 100%;
+}
+
+a.ui-btn-icon-notext.ui-corner-all {
+    -webkit-border-radius: .3125em;
+    border-radius: .3125em;
+}
+
+div.expanded-nav-left {
+    display: none;
+    width: 0;
+}
+
+@media all and (min-width: 36em) {
+    .main {
+        float: left;
+        width: 60%;
+    }
+}
+
+@media all and (min-width: 50em) {
+    .main {
+        width: 80%;
+    }
+    div.expanded-nav-left {
+        margin: 1em 1em 1em 0;
+        display: block;
+        visibility: visible;
+        position: relative;
+        float: left;
+        left: 0;
+        width: 20%;
+        clip: initial;
+    }
+    a#nav_btn {
+        display: none;
+    }
+    div.expanded-nav-left li:not(:hover) a::after {
+        display: none;
+    }
+    div.expanded-nav-left li a.ui-btn {
+        background-color: unset;
+    }
+}

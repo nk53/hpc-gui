@@ -1,0 +1,9 @@
+DN=/dev/null
+if ! which activate >$DN 2>$DN; then
+    echo "Please load or install conda before running this script" >&2
+    exit 1
+fi
+
+source `which activate` || exit 1
+conda activate balsam || exit 2
+
