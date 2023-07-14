@@ -1,0 +1,21 @@
+home:
+  text: Home
+  icon: home
+  path: /
+custom:
+  text: Custom Job
+lammps:
+  text: LAMMPS
+namd:
+  text: NAMD
+  sub_menu:
+    mca:
+      text: Multi-Copy Algorithm
+    ensemble:
+      text: NAMD Ensemble
+    single_node:
+      text: NAMD Single Node
+openmm:
+  text: OpenMM
+vasp:
+  text: VASP

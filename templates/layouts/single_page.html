@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+    <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+    <div data-role="page" id="{{ page_id }}">
+        {% include "parts/navigation.html" %}
+        {% include "parts/header.html" %}
+        <div class="ui-content" role="main">
+            {% include "content/%s.html"|format(content) %}
+        </div><!-- .ui-content[role=main] -->
+        {% include "parts/footer.html" %}
+    </div><!-- page -->
+</body>
+</html>

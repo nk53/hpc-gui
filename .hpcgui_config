@@ -1,9 +1,11 @@
 DN=/dev/null
 if ! which activate >$DN 2>$DN; then
     echo "Please load or install conda before running this script" >&2
-    exit 1
+    if [ $SHLVL -gt 1 ]; then
+        exit 1
+    fi
+else
+    source `which activate` || exit 1
+    conda activate balsam || exit 2
 fi
-
-source `which activate` || exit 1
-conda activate balsam || exit 2
 

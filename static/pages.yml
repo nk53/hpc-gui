@@ -1,0 +1,18 @@
+home:
+  title: HPC-GUI Front Page
+custom:
+  title: Custom Job
+mca:
+  title: Multi-Copy Algorithm
+namd_ensemble:
+  title: NAMD Ensemble
+namd_single_node:
+  title: NAMD Single Node
+openmm:
+  title: OpenMM
+vasp:
+  title: VASP
+lammps:
+  title: LAMMPS
+"404":
+  title: Page Not Found

@@ -1,0 +1,66 @@
+{%- import 'parts/utils.html' as utils -%}
+{%- macro label_field(text, _for=None) -%}
+    {%- if text is not none -%}
+        <label{% if _for is not none %} for="{{ _for }}"{% endif -%}
+        {{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</label>
+    {% endif -%}
+{%- endmacro -%}
+
+{%- macro input(name, value='', type='text', size=20, label=None) -%}
+    {{ label_field(label, _for=name) }}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value|e
+           }}" size="{{ size }}"{{ utils.cat_attrs(**kwargs) }}>
+{%- endmacro -%}
+
+{%- macro textarea(name, value='', label=None) -%}
+    {{ label_field(label, _for=name, classes=['textarea-label']) }}
+    <textarea name="{{ name }}" {{ utils.cat_attrs(**kwargs) }}>{{ value }}</textarea>
+{%- endmacro -%}
+
+{%- macro path(name) -%}
+    {%- do kwargs.setdefault('classes', []) -%}
+    {%- do kwargs['classes'].append('code') -%}
+    {{ input(name, **kwargs) }}
+{%- endmacro -%}
+
+{%- macro select(name, options, id=None, label=None, add_div=True) -%}
+{% if add_div %}
+<div class="ui-field-contain">
+{% endif -%}
+    {{ label_field(label, _for=name) }}
+    <select{% if id %} id="{{ id }}"{% endif %} name="{{ name }}">
+    {%- for option in options %}
+        {%- if option is mapping %}
+        <option value="{{ option['value'] }}"
+        {%- if option.get('selected', False) %}selected{% endif %}>{{ option['text'] }}</option>
+        {%- elif option is not string and option is sequence %}
+        <option value="{{ option[0] }}"
+        {%- if option|length is ge 3 and option[2] %}selected{% endif %}>{{ option[1] }}</option>
+        {%- else %}
+        <option value="{{ option }}">{{ option }}</option>
+        {%- endif %}
+    {%- endfor %}
+    </select>{{ utils.comment_css_sel(tag='select', id=id, name=name) }}
+{%- if add_div %}
+</div><!-- .ui-field-contain -->
+{% endif -%}
+{%- endmacro -%}
+
+{%- macro input_integer(name, value=0, pattern="-?[0-9]+") -%}
+    {{ input(name, value=value, pattern=pattern, type='number', **kwargs) }}
+{%- endmacro -%}
+
+{%- macro non_negative_integer(name, value=0, pattern="[0-9]+") -%}
+    {{ input(name, value=value, pattern=pattern, type='number', **kwargs) }}
+{%- endmacro -%}
+
+{%- macro positive_integer(name, value=1, pattern="[1-9][0-9]*") -%}
+    {{ input(name, value=value, pattern=pattern, type='number', **kwargs) }}
+{%- endmacro -%}
+
+{%- macro memory_size(name, value=0, pattern="[1-9][0-9]*") -%}
+<div class="ui-field-contain">
+    {{ input(name~'[num]', value=value, pattern=pattern, type='number', **kwargs) }}
+    {{ select(name~'[scale]', [('GB', 'MB', 'kB', 'B')], add_div=False) }}
+</div><!-- .ui-field-contain -->
+{%- endmacro -%}

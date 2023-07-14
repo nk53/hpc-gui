@@ -1,0 +1,31 @@
+{# returns a CSS selector string; useful for debugging #}
+{%- macro css_selector(tag=None, id=None, classes=None) -%}
+    {% if tag is not none %}{{ tag }}{% endif -%}
+    {% if id is not none %}#{{ id }}{% endif -%}
+    {% if classes is not none %}.{{ classes|join('.') }}{% endif -%}
+    {% for attr, value in kwargs.items() -%}
+        [{{ attr }}="{{ value }}"]
+    {%- endfor %}
+{%- endmacro -%}
+
+{# wraps css_selector(...) in an HTML comment #}
+{%- macro comment_css_sel() -%}
+    <!-- {{ css_selector(**kwargs) }} -->
+{%- endmacro -%}
+
+{# concatenate tag attributes other than class #}
+{%- macro cat_attrs() -%}
+    {%- for attr, value in kwargs.items() %}
+        {%- if attr is sameas 'classes' -%}
+            {{ ' ' ~ cat_classes(value) }}
+        {%- else -%}
+            {{ ' ' ~ attr }}="{{ value }}"
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro cat_classes(classes) -%}
+    {%- if classes is not none -%}
+        class="{{ classes|join(' ') }}"
+    {%- endif -%}
+{%- endmacro -%}

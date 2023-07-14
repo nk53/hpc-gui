@@ -1,10 +1,14 @@
-body {
-    font-family: Helvetica, sans-serif;
+.code {
+    font-family: Courier New;
 }
 
 .main, .sidebar {
     display: block;
     width: 100%;
+}
+
+body {
+    font-family: Helvetica, sans-serif;
 }
 
 a.ui-btn-icon-notext.ui-corner-all {
@@ -35,8 +39,10 @@ div.expanded-nav-left {
         position: relative;
         float: left;
         left: 0;
-        width: 20%;
         clip: initial;
+        width: 20%;
+        /* autoexpand submenus */
+        min-width: max-content;
     }
     a#nav_btn {
         display: none;
@@ -44,7 +50,33 @@ div.expanded-nav-left {
     div.expanded-nav-left li:not(:hover) a::after {
         display: none;
     }
-    div.expanded-nav-left li a.ui-btn {
+    /*div.expanded-nav-left li a.ui-btn {
         background-color: unset;
-    }
+    }*/
+}
+
+/* remove extra border for collapsible lists */
+.ui-listview > li.ui-li-static {
+    padding: 0;
+    border-width: 0;
+}
+.ui-listview > li.ui-li-static div.ui-collapsible-content,
+li.ui-collapsible > h2.ui-collapsible-heading > a {
+    border-bottom-width: 0;
+}
+.ui-listview > li.ui-li-static div.ui-collapsible-content,
+li.ui-collapsible li.ui-first-child {
+    border-top-width: 1px;
+}
+
+/* no special padding for collapsible lists */
+.ui-listview > li.ui-li-static ul.ui-listview {
+    padding-left: 1em;
+    background-color: #FCFCFC;
+}
+.ui-listview > li.ui-li-static ul.ui-listview a:not(:hover) {
+    background-color: #FCFCFC;
+}
+li.ui-collapsible > h2.ui-collapsible-heading {
+    margin: 0;
 }
