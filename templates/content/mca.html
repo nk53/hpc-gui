@@ -1,5 +1,5 @@
 {% import 'parts/form.html' as form %}
-<form id="namd_form" name="namd_form" action="/namd" method="post">
+<form id="mca_form" action="/mca" method="post">
 {{ form.path('namd_path', value='/soft/applications/NAMD/namd3',
          label="Path to NAMD executable") }}
 {{ form.path('charmrun_path', value='/soft/applications/NAMD/namd3.charmrun',
@@ -38,77 +38,4 @@ module load cudatoolkit-standalone/11.6.2
 
 $CHARMRUN ++mpiexec ++np <span data-src="np"></span> ++ppn <span data-src="ppn"></span> +replicas <span data-src="replicas"></span> <span data-src="ti_path"></span> --source <span data-src="source"></span> +pemap 0-31 +setcpuaffinity +devices <span data-function="num_to_range_list" data-src="gpus"></span> +stdout <span data-src="stdout"></span> +devicesperreplica <span data-src="ndevicesperreplica"></span>
 </pre>
-<script>
-
-/**
- *  Callback functions should take 2 args:
- *      target  the element to update
- *      src     the form input whose value is used for updating
- */
-function num_to_range_list(target, src) {
-    let from = $(target).attr('data-range-start');
-    if (!from)
-        from = 0;
-
-    const len = Number.parseInt( src.val() ) - from;
-
-    let nums = Array(len);
-    for (let i = 0; i < len; ++i)
-        nums[i] = from++;
-
-    target.html(nums.join(','));
-}
-
-function set_pbs_opts() {
-    console.log('got here');
-}
-
-function update_code() {
-    $('[name=code]').val( $('#script_tpl').text() );
-}
-
-$(document).ready(function() {
-    // data-src elements get their contents from form values
-    $("[data-src]:not([data-function])").each(function() {
-        // element to update
-        const target = $(this);
-        // form input whose value is used for updating
-        const src = $(`[name=${target.attr('data-src')}]`);
-
-        // put input's value directly in target
-        function updater() {
-            target.html( src.val() );
-            update_code();
-        }
-
-        src.change(updater);
-
-        // also do it now
-        updater();
-    });
-
-    $("[data-function]").each(function() {
-        const target = $(this);
-        const callback = eval(target.attr('data-function'));
-        const src_name = target.attr('data-src');
-
-        if (src_name === null)
-            return; // not sure what to do here yet
-
-        const src = $(`[name=${src_name}]`);
-
-        // on input change, use callback function
-        function updater() {
-            callback(target, src);
-            update_code();
-        }
-
-        src.change(updater);
-        updater();
-    });
-
-    // <textarea> elems only auto-adjust their size on keyup, not on change
-    $('textarea').trigger('keyup');
-});
-</script>
 </form><!-- form#namd_form -->

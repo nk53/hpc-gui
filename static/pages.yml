@@ -1,18 +1,23 @@
 home:
   title: HPC-GUI Front Page
-custom:
-  title: Custom Job
+#custom:
+#  title: Custom Job
 mca:
   title: Multi-Copy Algorithm
 namd_ensemble:
   title: NAMD Ensemble
-namd_single_node:
+namd_single:
   title: NAMD Single Node
-openmm:
-  title: OpenMM
-vasp:
-  title: VASP
+#openmm:
+#  title: OpenMM
+#vasp:
+#  title: VASP
 lammps:
   title: LAMMPS
+lammps_gpu:
+  title: LAMMPS GPU
+lammps_kokkos:
+  title: LAMMPS KOKKOS
 "404":
   title: Page Not Found
+

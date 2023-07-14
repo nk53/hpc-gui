@@ -11,7 +11,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates", extensions=['jinja2.ext.do'])
 MENU = utils.read_yaml('static/menu.yml')
 PAGES = utils.read_yaml('static/pages.yml')
-#MENU_PAGES = utils.setup_menu(MENU, PAGES)
+
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):

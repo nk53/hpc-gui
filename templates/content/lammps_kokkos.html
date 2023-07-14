@@ -1,0 +1,50 @@
+{% import 'parts/form.html' as form %}
+<form id="lammps_gpu_form" action="/lammps_gpu" method="post">
+{{ form.path('lammps_path', value='/soft/applications/NAMD/namd3',
+         label="Path to LAMMPS executable") }}
+{{ form.path('lammps_args', value='-in in.reaxc.hns -k on g ${NGPUS} -sf kk -pk kokkos neigh half neigh/qeq full newton on ',
+         label="LAMMPS arguments") }}
+{{ form.positive_integer('nranks', value=4, label="Number of ranks") }}
+{#{{ form.positive_integer('nrankssocket', value=4, label="Number of ranks per socket") }}#}
+{{ form.positive_integer('ndepth', value=8, label="Depth") }}
+{{ form.positive_integer('nthreads', value=1, label="Number of threads") }}
+{{ form.positive_integer('ngpus', value=4, label="Number of GPUs") }}
+{{ form.select('resource[nsel][system]', [
+    ('any', 'Any'),
+    ('polaris', 'Polaris', True)], label="System") }}
+{{ form.textarea('code', label='The Code', classes=['code']) }}
+{#
+<div id="resource_select_tpl" style="display: none;" data-nsel="0">
+    {{ form.non_negative_integer('resource[nsel][ncpus]', label="CPUs") }}
+    {{ form.memory_size('resource[nsel][mem]', label="Memory") }}
+    {{ form.non_negative_integer('resource[nsel][mpiprocs]', label="MPI threads") }}
+</div>
+#}
+<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
+<span data-func="set_pbs_opts">#PBS placeholder_text</span>
+
+export MPICH_GPU_SUPPORT_ENABLED=1
+
+NNODES=`wc -l &lt; $PBS_NODEFILE`
+
+# per-node settings
+NRANKS=<span data-src="nranks"></span>
+{#NRANKSSOCKET=<span data-src="nrankssocket"></span> # option unused????#}
+NRANKSSOCKET=2 # option unused????
+NDEPTH=<span data-src="ndepth"></span>
+NTHREADS=<span data-src="nthreads"></span>
+NGPUS=<span data-src="ngpus"></span>
+
+NTOTRANKS=$(( NNODES * NRANKS ))
+
+EXE=<span data-src="lammps_path"></span>
+EXE_ARG="<span data-src="lammps_args"></span>"
+
+# OMP settings mostly to quiet Kokkos messages
+MPI_ARG="-n ${NTOTRANKS} --ppn ${NRANKS} --depth=${NDEPTH} --cpu-bind depth --env OMP_NUM_THREADS=${NTHREADS} --env OMP_PROC_BIND=spread --env OMP_PLACES=cores"
+
+COMMAND="mpiexec ${MPI_ARG} ${EXE} ${EXE_ARG}"
+echo "COMMAND= ${COMMAND}"
+${COMMAND}
+</pre>
+</form><!-- form#namd_form -->

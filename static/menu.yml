@@ -6,14 +6,19 @@ custom:
   text: Custom Job
 lammps:
   text: LAMMPS
+  sub_menu:
+    lammps_gpu:
+      text: LAMMPS GPU
+    lammps_kokkos:
+      text: LAMMPS KOKKOS
 namd:
   text: NAMD
   sub_menu:
     mca:
       text: Multi-Copy Algorithm
-    ensemble:
+    namd_ensemble:
       text: NAMD Ensemble
-    single_node:
+    namd_single:
       text: NAMD Single Node
 openmm:
   text: OpenMM

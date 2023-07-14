@@ -19,6 +19,7 @@ a.ui-btn-icon-notext.ui-corner-all {
 div.expanded-nav-left {
     display: none;
     width: 0;
+    z-index: 1;
 }
 
 @media all and (min-width: 36em) {
@@ -58,11 +59,11 @@ div.expanded-nav-left {
 /* remove extra border for collapsible lists */
 .ui-listview > li.ui-li-static {
     padding: 0;
-    border-width: 0;
+    /*border-width: 0;*/
 }
 .ui-listview > li.ui-li-static div.ui-collapsible-content,
 li.ui-collapsible > h2.ui-collapsible-heading > a {
-    border-bottom-width: 0;
+    border-width: 0;
 }
 .ui-listview > li.ui-li-static div.ui-collapsible-content,
 li.ui-collapsible li.ui-first-child {
