@@ -9,7 +9,7 @@
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
 {{ form.textarea('code', label='The Code', classes=['code']) }}
-<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash
+<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
 <span data-func="set_pbs_opts">#PBS placeholder_text</span>
 
 EXE=<span data-src="namd_path"></span>

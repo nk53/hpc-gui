@@ -81,3 +81,8 @@ li.ui-collapsible li.ui-first-child {
 li.ui-collapsible > h2.ui-collapsible-heading {
     margin: 0;
 }
+
+div.controlgroup-textinput {
+    padding-top: .25em;
+    padding-bottom: .25em;
+}

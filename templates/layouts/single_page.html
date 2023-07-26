@@ -3,7 +3,7 @@
 <head>
     <title>{{ page.title }}</title>
     <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -11,12 +11,18 @@
 </head>
 <body>
     <div data-role="page" id="{{ page_id }}">
-        {% include "parts/navigation.html" %}
-        {% include "parts/header.html" %}
+        {% filter indent(width=8) %}
+        {%- include "parts/navigation.html" -%}
+        {% endfilter %}
+        {% filter indent(width=8) %}
+        {%- include "parts/header.html" -%}
+        {% endfilter %}
         <div class="ui-content" role="main">
-            {% include "content/%s.html"|format(content) %}
+            {% include "content/%s.html"|format(page_id) %}
         </div><!-- .ui-content[role=main] -->
-        {% include "parts/footer.html" %}
+        {% filter indent(width=8) %}
+        {%- include "parts/footer.html" -%}
+        {% endfilter %}
     </div><!-- page -->
 </body>
 </html>

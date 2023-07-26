@@ -1,6 +1,6 @@
 {% import 'parts/form.html' as form %}
 <form id="lammps_gpu_form" action="/lammps_gpu" method="post">
-{{ form.path('lammps_path', value='/soft/applications/NAMD/namd3',
+{{ form.path('lammps_path', value='/home/knight/bin/lammps_polaris_nvhpc',
          label="Path to LAMMPS executable") }}
 {{ form.path('lammps_args', value='-in in.rhodo -pk gpu ${NGPUS} -pk omp 0 -sf hybrid gpu omp',
          label="LAMMPS arguments") }}
@@ -29,8 +29,6 @@ NNODES=`wc -l &lt; $PBS_NODEFILE`
 
 # per-node settings
 NRANKS=<span data-src="nranks"></span>
-{#NRANKSSOCKET=<span data-src="nrankssocket"></span> # option unused????#}
-NRANKSSOCKET=2 # option unused????
 NDEPTH=<span data-src="ndepth"></span>
 NTHREADS=<span data-src="nthreads"></span>
 NGPUS=<span data-src="ngpus"></span>

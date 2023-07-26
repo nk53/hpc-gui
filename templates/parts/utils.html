@@ -26,6 +26,6 @@
 
 {%- macro cat_classes(classes) -%}
     {%- if classes is not none -%}
-        class="{{ classes|join(' ') }}"
+        class="{{ classes|unique|join(' ') }}"
     {%- endif -%}
 {%- endmacro -%}

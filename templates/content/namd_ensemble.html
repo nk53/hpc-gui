@@ -12,7 +12,7 @@
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
 {{ form.textarea('code', label='The Code', classes=['code']) }}
-<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash
+<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
 <span data-func="set_pbs_opts">#PBS placeholder_text</span>
 
 EXE=<span data-src="namd_path"></span>
@@ -26,7 +26,7 @@ i=0
 for lh in <span data-src="hostfile_path"></span>*
 do
     i=$[$i+1]
-    mpiexec -n 1 --ppn 1 --hostfile ${lh} --depth=<span data-src="n_hosts"></span> --cpu-bind depth $EXE +p <span data-src="n_hosts"></span> +devices <span data-function="num_to_range_list" data-src="gpus"></span> <span data-src="namd_script_tpl"></span> > <span data-src="namd_out_tpl"></span> & 
+    mpiexec -n 1 --ppn 1 --hostfile ${lh} --depth=<span data-src="n_hosts"></span> --cpu-bind depth $EXE +p <span data-src="n_hosts"></span> +devices <span data-function="num_to_range_list" data-src="gpus"></span> <span data-src="namd_script_tpl"></span> &gt; <span data-src="namd_out_tpl"></span> & 
 sleep 1s
 done
 wait

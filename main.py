@@ -24,6 +24,6 @@ async def page(request: Request, page: str):
         page = "404"
 
     return templates.TemplateResponse("layouts/single_page.html", {
-        "request": request, "content": page, "menu": MENU,
+        "request": request, "page_id": page, "menu": MENU,
         "page": PAGES[page],
     })

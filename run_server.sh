@@ -3,7 +3,9 @@
 source .hpcgui_config
 
 if which pbcopy >/dev/null 2>/dev/null; then
-    echo -n "http://localhost:8000" | pbcopy
+    url="http://localhost:8000"
+    #echo -n "$url" | pbcopy
+    #(sleep 2 ; open "$url") &
 fi
 
 uvicorn main:app --port 8000 --reload
