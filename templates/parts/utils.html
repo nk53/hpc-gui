@@ -9,12 +9,16 @@
 {%- endmacro -%}
 
 {# wraps css_selector(...) in an HTML comment #}
-{%- macro comment_css_sel() -%}
+{%- macro comment_css_sel(args=none) -%}
+{%- if args is none %}{% set args = {} %}{% endif -%}
+{%- if kwargs is none %}{% set kwargs = {} %}{% endif -%}
+{%- do kwargs.update(args) -%}
     <!-- {{ css_selector(**kwargs) }} -->
 {%- endmacro -%}
 
 {# concatenate tag attributes other than class #}
-{%- macro cat_attrs() -%}
+{%- macro cat_attrs(args=None) -%}
+    {%- if args is not none %}{% do kwargs.update(args) %}{% endif -%}
     {%- for attr, value in kwargs.items() %}
         {%- if attr is sameas 'classes' -%}
             {{ ' ' ~ cat_classes(value) }}
@@ -28,4 +32,11 @@
     {%- if classes is not none -%}
         class="{{ classes|unique|join(' ') }}"
     {%- endif -%}
+{%- endmacro -%}
+
+{# import this macro with context if included path needs context #}
+{%- macro include_indented(path) -%}
+{% filter indent(**kwargs) %}
+{%- include path -%}
+{% endfilter %}
 {%- endmacro -%}

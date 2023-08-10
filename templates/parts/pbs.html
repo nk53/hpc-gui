@@ -1,69 +1,69 @@
 {%- import 'parts/form.html' as form -%}
 {%- macro resources() -%}
-    <h2>PBS Options</h2>
-    {{- form.input('PBS[name]', label='Job name', placeholder='Leave blank to ignore') }}
-    {{- form.input('PBS[account]', label='Account to charge') -}}
-    {{- form.select('PBS[queue]', [
-        'debug', 'debug-scaling', 'prod', 'preemptable', 'demand'
-    ], label='Job queue') -}}
-    {{- form.checkbox('PBS[mail][use]', label='Get email updates') }}
-    <div class="email-options">
-        {%- filter indent -%}
-        {{- form.input('PBS[mail][addr]', label='Email address') -}}
-        {{- form.checkbox_group([
-            {
-                'label': 'job aborted',
-                'name': 'PBS[mail][a]',
-                'checked': True,
-            }, {
-                'label': 'beginning of execution',
-                'name': 'PBS[mail][b]',
-            }, {
-                'label': 'end of execution',
-                'name': 'PBS[mail][e]',
-            }, {
-                'label': 'also update subjobs',
-                'name': 'PBS[mail][j]',
-            }
-        ], legend="Job update events") -}}
-        {%- endfilter %}
-    </div><!-- .email-options -->
-    {{- form.select('PBS[place]', [
-        ('free', 'no restrictions (free)'),
-        ('pack', 'all chunks on one host (pack)'),
-        ('scatter', 'one host per chunk (scatter)'),
-        ('vscatter', 'one host per vnode (vscatter)'),
-    ], label='Resource (chunk) placement strategy') -}}
-    {{- form.select('PBS[sharing]', [
-        ('excl', 'only this job can use the chosen vnodes (excl)'),
-        ('exclhost', 'reserve whole host for this job (exclhost)'),
-        ('shared', 'vnodes can be shared with other jobs (shared)'),
-    ], label='Sharing options') -}}
-    <h3>Job-wide resource limits</h3>
-    {{- form.input('PBS[walltime]', label='Walltime', value='0:30:00', add_div=True, mini=True) -}}
-    {{- form.input('PBS[pcput]', label='Per-process CPU time', add_div=False, mini=True) -}}
-    {{- form.memory_size('PBS[pmem]', label='Per-process memory', value='') -}}
-    {{- form.memory_size('PBS[pvmem]', label='Per-process vnode memory', value='') -}}
-    {{- chunk_limits() -}}
+<h2>PBS Options</h2>
+{{ form.input('PBS[name]', label='Job name', placeholder='Leave blank to ignore') }}
+{{ form.input('PBS[account]', label='Account to charge') }}
+{{ form.select('PBS[queue]', [
+    'debug', 'debug-scaling', 'prod', 'preemptable', 'demand'
+], label='Job queue') }}
+{{ form.checkbox('PBS[mail][use]', label='Get email updates') }}
+<div class="email-options">
+{%- filter indent %}
+{{ form.input('PBS[mail][addr]', label='Email address') }}
+{{ form.checkbox_group([
+    {
+        'label': 'job aborted',
+        'name': 'PBS[mail][a]',
+        'checked': True,
+    }, {
+        'label': 'beginning of execution',
+        'name': 'PBS[mail][b]',
+    }, {
+        'label': 'end of execution',
+        'name': 'PBS[mail][e]',
+    }, {
+        'label': 'also update subjobs',
+        'name': 'PBS[mail][j]',
+    }
+], legend="Job update events") }}
+{%- endfilter %}
+</div><!-- .email-options -->
+{{ form.select('PBS[place][arrangement]', [
+    ('free', 'no restrictions (free)'),
+    ('pack', 'all chunks on one host (pack)'),
+    ('scatter', 'one host per chunk (scatter)'),
+    ('vscatter', 'one host per vnode (vscatter)'),
+], label='Resource (chunk) placement strategy') }}
+{{ form.select('PBS[place][sharing]', [
+    ('excl', 'only this job can use the chosen vnodes (excl)'),
+    ('exclhost', 'reserve whole host for this job (exclhost)'),
+    ('shared', 'vnodes can be shared with other jobs (shared)'),
+], label='Sharing options') }}
+<h3>Job-wide resource limits</h3>
+{{ form.input('PBS[walltime]', label='Walltime', value='0:30:00', add_div=True, mini=True) }}
+{{ form.input('PBS[pcput]', label='Per-process CPU time', add_div=True, mini=True) }}
+{{ form.memory_size('PBS[pmem]', label='Per-process memory', value='') }}
+{{ form.memory_size('PBS[pvmem]', label='Per-process vnode memory', value='') }}
+{{ chunk_limits() }}
 {%- endmacro -%}
 
 {%- macro chunk_limits(tid='chunk_tpl') -%}
 <h3>Per-chunk resource limits</h3>
 <div class="chunk-limits">
-    <button type="button" class="ui-btn-inline ui-icon-plus">Add chunk set</button>
-    <div id="{{ tid }}" style="display: none;">
-        <fieldset data-role="controlgroup">
-            <legend>Chunk set <span></span>:</legend>
-            {{ form.positive_integer('PBS[chunk][][nchunks]', label='chunks') }}
-            {{ form.positive_integer('PBS[chunk][][ncpus]', label='CPUs') }}
-            {{ form.memory_size('PBS[chunk][][mem]', label='memory', value='', num_opts={'optional': True}) }}
-            {%- for pint_opt in ('mpiprocs', 'ompthreads') %}
-                {%- if pint_opt in kwargs %}
-                    {{ form.positive_integer('PBS[chunk][]['~pint_opt~']', optional=True) }}
-                {%- endif %}
-            {%- endfor %}
-            <button type="button" class="ui-btn-inline ui-icon-minus">Remove chunk set</button>
-        </fieldset>
+    <button id="{{ tid }}_add" type="button" data-mini="true" data-inline="true" data-icon="plus" data-enhanced="true">Add chunk set</button>
+    <button id="{{ tid }}_rm" type="button" data-mini="true" data-inline="true" data-icon="minus" data-enhanced="true">Remove chunk set</button>
+    <div id="{{ tid }}" data-inset="true" class="ui-body ui-body-a ui-corner-all" data-enhanced="true">
+        <div><p style="float: left;">Chunk set #<span></span>:</p></div>
+{%- filter indent(width=8) %}
+{{ form.positive_integer('PBS[chunk][0][nchunks]', label='Chunks', **{'data-enhanced': 'true'}) }}
+{{ form.positive_integer('PBS[chunk][0][ncpus]', label='CPUs', **{'data-enhanced': 'true'}) }}
+{{ form.memory_size('PBS[chunk][0][mem]', label='Memory', value='', num_opts={'optional': True}, no_enhance=True) }}
+{%- for pint_opt in ('mpiprocs', 'ompthreads') %}
+    {%- if pint_opt in kwargs %}
+        {{ form.positive_integer('PBS[chunk][0]['~pint_opt~']', optional=True, **{'data-enhanced': 'true'}) }}
+    {%- endif %}
+{%- endfor %}
+{%- endfilter -%}
     </div>
 </div><!-- .chunk-limits -->
 {%- endmacro -%}

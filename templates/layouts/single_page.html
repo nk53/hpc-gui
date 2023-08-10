@@ -1,28 +1,24 @@
+{%- from 'parts/utils.html' import include_indented with context -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>{{ page.title }}</title>
     <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='jquery.mobile-1.4.5.min.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script src="/static/forms.js"></script>
+    <script src="{{ url_for('static', path='/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/jquery.mobile-1.4.5.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/forms.js') }}"></script>
 </head>
 <body>
     <div data-role="page" id="{{ page_id }}">
-        {% filter indent(width=8) %}
-        {%- include "parts/navigation.html" -%}
-        {% endfilter %}
-        {% filter indent(width=8) %}
-        {%- include "parts/header.html" -%}
-        {% endfilter %}
+        {{ include_indented("parts/navigation.html", width=8) }}
+        {{ include_indented("parts/header.html", width=8) }}
         <div class="ui-content" role="main">
+            {%- set _indent_level = 12 %}
             {% include "content/%s.html"|format(page_id) %}
         </div><!-- .ui-content[role=main] -->
-        {% filter indent(width=8) %}
-        {%- include "parts/footer.html" -%}
-        {% endfilter %}
+        {{ include_indented("parts/footer.html", width=8) }}
     </div><!-- page -->
 </body>
 </html>

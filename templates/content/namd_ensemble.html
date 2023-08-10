@@ -1,5 +1,7 @@
-{% import 'parts/form.html' as form %}
+{%- import 'parts/form.html' as form -%}
+{%- import 'parts/pbs.html' as pbs -%}
 <form id="namd_ensemble_form" action="/namd_ensemble" method="post">
+{%- filter indent(_indent_level+4) %}
 {{ form.path('namd_path', value='/soft/applications/NAMD/namd3',
          label="Path to NAMD executable") }}
 {{ form.path('hostfile_path', value='local_hostfile', label="Hostfile config path prefix") }}
@@ -8,12 +10,13 @@
 {{ form.positive_integer('n_hosts', label="Number of hosts", value=16) }}
 {{ form.positive_integer('num_nodes_per_mpi', label="Nodes per MPI process", value=1) }}
 {{ form.non_negative_integer('gpus', value=4, label="Number of GPUs") }}
-{{ form.select('resource[nsel][system]', [
+{{ form.select('system', [
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
-{{ form.textarea('code', label='The Code', classes=['code']) }}
+{{ pbs.resources() }}
+{%- endfilter %}
 <pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
-<span data-func="set_pbs_opts">#PBS placeholder_text</span>
+<span id="pbs_opts">#PBS placeholder_text</span>
 
 EXE=<span data-src="namd_path"></span>
 
@@ -31,4 +34,10 @@ sleep 1s
 done
 wait
 </pre>
-</form><!-- form#namd_form -->
+{%- filter indent(_indent_level+4) %}
+<h2>The Code</h2>
+{{ form.textarea('code', classes=['code']) }}
+{%- endfilter -%}
+{% filter indent(_indent_level) %}
+</form><!-- form#namd_ensemble_form -->
+{%- endfilter -%}

@@ -1,132 +1,137 @@
 {%- import 'parts/utils.html' as utils -%}
+
 {%- macro field_contain(add_div) -%}
-{%- do kwargs.setdefault('classes', []) -%}
-{%- do kwargs['classes'].append('ui-field-contain') -%}
+{%- do kwargs.setdefault('wrapper_attrs', {}) -%}
+{%- do kwargs['wrapper_attrs'].setdefault('classes', ['ui-field-contain']) -%}
 {{ wrap_tag('div', wrap=add_div, **kwargs) }}
 {%- endmacro -%}
 
-{%- macro wrap_tag(tag, wrap=True) -%}
-    {%- if wrap %}
-    <{{ tag }}{{ utils.cat_attrs(**kwargs) }}>
-        {{- caller()|indent }}
-    </{{ tag }}>{{ utils.comment_css_sel(**kwargs) }}
-    {% else -%}
-{{ caller() }}
+{%- macro wrap_tag(tag, wrap=True, wrapper_attrs=None) -%}
+{%- if wrap -%}
+<{{ tag }}{{ utils.cat_attrs(wrapper_attrs) }}>
+    {{ caller(kwargs)|indent }}
+</{{ tag }}>{{ utils.comment_css_sel(wrapper_attrs) -}}
+{%- else -%}
+{{ caller(kwargs) }}
     {%- endif -%}
 {%- endmacro -%}
 
 {%- macro label_field(text, _for=None) -%}
-    {%- if text is not none -%}
-        <label{% if _for is not none %} for="{{ _for }}"{% endif -%}
-        {{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</label>
-    {%- endif -%}
-{%- endmacro -%}
-{%- macro legend_field(text) -%}
-    {%- if text is not none -%}
-        <legend{{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</legend>
-    {% endif -%}
+{%- if text is not none -%}
+<label{% if _for is not none %} for="{{ _for }}"{% endif -%}
+{{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</label>
+{%- endif -%}
 {%- endmacro -%}
 
-{%- macro input(name, value='', type='text', size=20, label=None, add_div=False) -%}
-{% call field_contain(add_div) %}
-    <!-- input[name="{{ name }}"] -->
-    {{ label_field(label, _for=name) }}
-    <input type="{{ type }}" name="{{ name }}" value="{{ value|e
-            }}"{% if size is not none %} size="{{ size }}"{% endif -%}
-            {{ utils.cat_attrs(**kwargs) }}>
+{%- macro legend_field(text) -%}
+{%- if text is not none -%}
+    <legend{{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</legend>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro input(name, value='', type='text', size=20, label=None, add_div=True, mini=False) -%}
+{%- call(kwargs) field_contain(add_div, **kwargs) -%}
+<!-- input[name="{{ name }}"] -->
+{{ label_field(label, _for=name) }}
+<input type="{{ type }}" id="{{ name }}" name="{{ name }}" value="{{ value|e
+        }}"{% if size is not none %} size="{{ size }}"{% endif -%}
+        {% if mini %} data-mini="true"{% endif -%}
+        {{ utils.cat_attrs(**kwargs) }}>
 {%- endcall -%}
 {%- endmacro -%}
 
 {%- macro checkbox(name, checked=False, label=None) -%}
 <input type="checkbox" id="{{ name }}" name="{{ name }}"{{ utils.cat_attrs(**kwargs) }}>
-    {{ label_field(label, _for=name) }}
+{{ label_field(label, _for=name) }}
 {%- endmacro -%}
 
-{%- macro checkbox_group(options, id=None, legend=None, horizontal=False) %}
-    <fieldset{% if id %} id="{{ id }}"{% endif %} data-role="controlgroup"
-         {%- if horizontal %} data-type="horizontal"{% endif %}>
-    {%- if legend is not none %}
-        <legend>{{ legend }}</legend>
+{%- macro checkbox_group(options, id=None, legend=None, horizontal=False) -%}
+<fieldset{% if id %} id="{{ id }}"{% endif %} data-role="controlgroup"
+     {%- if horizontal %} data-type="horizontal"{% endif %}>
+{%- if legend is not none %}
+    <legend>{{ legend }}</legend>
+{%- endif -%}
+{%- for option in options -%}
+    {%- if option is mapping -%}
+        {%- set label = option.get('label', None) -%}
+        {%- set name = option['name'] -%}
+        {%- set id = option.get('id', name) -%}
+        {%- set checked = option.get('checked', '') -%}
+        {%- if checked %}{% set checked = ' checked' -%}
+        {%- else %}{% set checked = '' %}{%- endif %}
+    <input type="checkbox" name="{{ name }}" id="{{ id }}"{{ checked }}>
+    {{ label_field(label, _for=id) }}
+    {%- elif option is not string and option is sequence -%}
+        {%- set id = option[0] %}
+        {%- set name = option[0] %}
+        {%- set label = option[1] %}
+        {%- set checked = option|length is ge 3 and option[2] %}
+        {%- if checked %}{% set checked = ' checked' %}
+        {%- else %}{% set checked = '' %}{% endif %}
+    <input type="checkbox" name="{{ name }}" id="{{ id }}"{{ checked }}>
+    {{ label_field(label, _for=id) }}
+    {%- else -%}
+    <input type="checkbox" name="{{ option }}" id="{{ option }}">
+    {{ label_field(option, _for=option) }}
     {%- endif -%}
-    {%- for option in options -%}
-        {%- if option is mapping -%}
-            {%- set label = option.get('label', None) -%}
-            {%- set name = option['name'] -%}
-            {%- set id = option.get('id', name) -%}
-            {%- set checked = option.get('checked', '') -%}
-            {%- if checked %}{% set checked = ' checked' -%}
-            {%- else %}{% set checked = '' %}{%- endif %}
-        <input type="checkbox" name="{{ name }}" id="{{ id }}"{{ checked }}>
-        {{ label_field(label, _for=id) }}
-        {%- elif option is not string and option is sequence -%}
-            {%- set id = option[0] %}
-            {%- set name = option[0] %}
-            {%- set label = option[1] %}
-            {%- set checked = option|length is ge 3 and option[2] %}
-            {%- if checked %}{% set checked = ' checked' %}
-            {%- else %}{% set checked = '' %}{% endif %}
-        <input type="checkbox" name="{{ name }}" id="{{ id }}"{{ checked }}>
-        {{ label_field(label, _for=id) }}
-        {%- else -%}
-        <input type="checkbox" name="{{ option }}" id="{{ option }}">
-        {{ label_field(option, _for=option) }}
-        {%- endif -%}
-    {%- endfor %}
-    </fieldset>
+{%- endfor %}
+</fieldset>
 {%- endmacro -%}
 
 {%- macro textarea(name, value='', label=None) -%}
-    {{ label_field(label, _for=name, classes=['textarea-label']) }}
-    <textarea name="{{ name }}" {{ utils.cat_attrs(**kwargs) }}>{{ value|e }}</textarea>
+{{ label_field(label, _for=name, classes=['textarea-label']) }}
+<textarea name="{{ name }}" {{ utils.cat_attrs(**kwargs) }}>{{ value|e }}</textarea>
 {%- endmacro -%}
 
-{%- macro path(name) -%}
+{%- macro path(name, add_div=True) -%}
     {%- do kwargs.setdefault('classes', []) -%}
     {%- do kwargs['classes'].append('code') -%}
-    {{- input(name, **kwargs) -}}
+    {{- input(name, add_div=add_div, **kwargs) -}}
 {%- endmacro -%}
 
 {%- macro select(name, options, id=None, label=None, add_div=True) -%}
-{% call field_contain(add_div) %}
-    {{ label_field(label, _for=name) }}
-    <select{% if id %} id="{{ id }}"{% endif %} name="{{ name }}">
-    {%- for option in options %}
-        {%- if option is mapping %}
-        <option value="{{ option['value'] }}"
-        {%- if option.get('selected', False) %} selected{% endif %}>{{ option['text'] }}</option>
-        {%- elif option is not string and option is sequence %}
-        <option value="{{ option[0] }}"
-        {%- if option|length is ge 3 and option[2] %} selected{% endif %}>{{ option[1] }}</option>
-        {%- else %}
-        <option value="{{ option }}">{{ option }}</option>
-        {%- endif %}
-    {%- endfor %}
-    </select>{{ utils.comment_css_sel(tag='select', id=id, name=name) }}
+{%- call(kwargs) field_contain(add_div) -%}
+{{ label_field(label, _for=name) }}
+<select{% if id %} id="{{ id }}"{% endif %} name="{{ name }}">
+{%- for option in options %}
+    {%- if option is mapping %}
+    <option value="{{ option['value'] }}"
+    {%- if option.get('selected', False) %} selected{% endif %}>{{ option['text'] }}</option>
+    {%- elif option is not string and option is sequence %}
+    <option value="{{ option[0] }}"
+    {%- if option|length is ge 3 and option[2] %} selected{% endif %}>{{ option[1] }}</option>
+    {%- else %}
+    <option value="{{ option }}">{{ option }}</option>
+    {%- endif %}
+{%- endfor %}
+</select>{{ utils.comment_css_sel(tag='select', id=id, name=name) }}
 {%- endcall -%}
 {%- endmacro -%}
 
-{%- macro radio(name, options, legend=None, add_fieldset=True, horizontal=False) -%}
+{%- macro radio(name, options, legend=None, add_fieldset=True, horizontal=False, mini=False, no_enhance=False) -%}
 {% if add_fieldset %}
-<fieldset data-role="controlgroup"{% if horizontal %} data-type="horizontal"{% endif %}>
+<fieldset data-role="controlgroup"{% if horizontal %} data-type="horizontal"{% endif -%}
+          {% if mini %} data-mini="True"{% endif %}{% if no_enhance %} data-enhanced="true"{% endif %}>
 {% endif -%}
     {{ legend_field(legend) }}
     {%- for option in options %}
         {%- if option is mapping %}
             {%- set value = option['value'] %}
             {%- set id = "{}-{}".format(name, value) %}
-    <input type="radio" id="{{ id }}" name="{{ name }}" value="{{ value }}"
-            {%- if option.get('checked', False)%} checked="checked"{% endif %}>
-    {{ label_field(option.get('label', option['value']), _for=id) }}
-        {%- elif option is not string and option is sequence %}
-            {%- set id = "{}-{}".format(name, option[0]) %}
-    <input type="radio" id="{{ id }}" name="{{ name }}" value="{{ value }}"
-            {%- if option|length is ge 3 and option[2] %} checked="checked"{% endif %}>
-    {{ label_field(option[1], _for=id) }}
-        {%- else %}
-            {%- set id = "{}-{}".format(name, option) %}
-    <input type="radio" id="{{ id }}" name="{{ name }}" value="{{ option }}">
-    {{ label_field(option, _for=id) }}
-        {%- endif %}
+<input type="radio" id="{{ id }}" name="{{ name }}" value="{{ value }}"
+        {%- if option.get('checked', False)%} checked="checked"{% endif -%}{% if no_enhance %} data-enhanced="true"{% endif %}>
+{{ label_field(option.get('label', option['value']), _for=id) }}
+    {%- elif option is not string and option is sequence %}
+        {%- set id = "{}-{}".format(name, option[0]) %}
+        {%- set value = option[1] -%}
+<input type="radio" id="{{ id }}" name="{{ name }}" value="{{ value }}"
+        {%- if option|length is ge 3 and option[2] %} checked="checked"{% endif -%}{% if no_enhance %} data-enhanced="true"{% endif %}>
+{{ label_field(option[1], _for=id) }}
+    {%- else %}
+        {%- set id = "{}-{}".format(name, option) %}
+<input type="radio" id="{{ id }}" name="{{ name }}" value="{{ option }}"{% if no_enhance %} data-enhanced="true"{% endif %}>
+{{ label_field(option, _for=id) }}
+    {%- endif %}
     {%- endfor %}
 {%- if add_fieldset %}
 </fieldset>
@@ -148,19 +153,26 @@
     {{ input(name, value=value, pattern=pattern, type='number', size=size, **kwargs) }}
 {%- endmacro -%}
 
-{%- macro memory_size(name, value=0, pattern="[1-9][0-9]*", label=None, num_opts=None, radio_opts=None) -%}
-    {%- if num_opts is none %}{% set num_opts = {} %}{% endif -%}
-    {%- do num_opts.setdefault('placeholder', '#') -%}
-    {%- do num_opts.setdefault('data-wrapper-class', 'controlgroup-textinput ui-btn') -%}
+{%- macro memory_size(name, value=0, pattern="[1-9][0-9]*", label=None, num_opts=None, radio_opts=None, no_enhance=False) -%}
+{%- if num_opts is none %}{% set num_opts = {} %}{% endif -%}
+{%- do num_opts.setdefault('placeholder', '#') -%}
+{%- do num_opts.setdefault('mini', True) -%}
+{%- do num_opts.setdefault('data-wrapper-class', 'controlgroup-textinput ui-btn') -%}
+{%- if no_enhance %}{% do num_opts.setdefault('data-enhanced', 'true') %}{% endif -%}
 
-    {%- if radio_opts is none %}{% set radio_opts = {} %}{% endif -%}
-    {%- do radio_opts.setdefault('add_fieldset', False) -%}
+{%- if radio_opts is none %}{% set radio_opts = {} %}{% endif -%}
+{%- do radio_opts.setdefault('add_fieldset', False) -%}
+{%- do radio_opts.setdefault('no_enhance', no_enhance) -%}
 
-    {%- set iname = name+'[num]' -%}
-    {%- set sname = name+'[scale]' -%}
-    {{ label_field(label, _for=iname) }}
-    <div data-role="controlgroup" data-type="horizontal" class="ui-field-contain">
-        {{ positive_integer(iname, value=value, pattern=pattern, **num_opts) }}
-        {{ radio(sname, [('GB', 'GB', True), 'MB', 'kB', 'B' ], **radio_opts) }}
-    </div><!-- horizontal controlgroup -->
+{%- set iname = name+'[num]' -%}
+{%- set sname = name+'[scale]' -%}
+<div class="ui-field-contain memory-size">
+{%- filter indent %}
+{{ label_field(label, _for=name) }}
+<div id="{{ name }}" data-role="controlgroup" data-type="horizontal" data-mini="True">
+{{ positive_integer(iname, add_div=False, value=value, pattern=pattern, **num_opts) }}
+{{ radio(sname, [('GB', 'GB', True), 'MB', 'kB', 'B' ], **radio_opts) }}
+</div><!-- horizontal controlgroup -->
+{%- endfilter %}
+</div><!-- .ui-field-contain -->
 {%- endmacro -%}

@@ -1,27 +1,22 @@
-{% import 'parts/form.html' as form %}
-<form id="lammps_gpu_form" action="/lammps_gpu" method="post">
+{%- import 'parts/form.html' as form -%}
+{%- import 'parts/pbs.html' as pbs -%}
+<form id="lammps_kokkos_form" action="/lammps_gpu" method="post">
+{%- filter indent(_indent_level+4) %}
 {{ form.path('lammps_path', value='/home/knight/bin/lammps_polaris_nvhpc',
          label="Path to LAMMPS executable") }}
 {{ form.path('lammps_args', value='-in in.reaxc.hns -k on g ${NGPUS} -sf kk -pk kokkos neigh half neigh/qeq full newton on ',
          label="LAMMPS arguments") }}
 {{ form.positive_integer('nranks', value=4, label="Number of ranks") }}
-{#{{ form.positive_integer('nrankssocket', value=4, label="Number of ranks per socket") }}#}
 {{ form.positive_integer('ndepth', value=8, label="Depth") }}
 {{ form.positive_integer('nthreads', value=1, label="Number of threads") }}
 {{ form.positive_integer('ngpus', value=4, label="Number of GPUs") }}
-{{ form.select('resource[nsel][system]', [
+{{ form.select('system', [
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
-{{ form.textarea('code', label='The Code', classes=['code']) }}
-{#
-<div id="resource_select_tpl" style="display: none;" data-nsel="0">
-    {{ form.non_negative_integer('resource[nsel][ncpus]', label="CPUs") }}
-    {{ form.memory_size('resource[nsel][mem]', label="Memory") }}
-    {{ form.non_negative_integer('resource[nsel][mpiprocs]', label="MPI threads") }}
-</div>
-#}
+{{ pbs.resources() }}
+{%- endfilter %}
 <pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
-<span data-func="set_pbs_opts">#PBS placeholder_text</span>
+<span id="pbs_opts">#PBS placeholder_text</span>
 
 export MPICH_GPU_SUPPORT_ENABLED=1
 
@@ -45,4 +40,10 @@ COMMAND="mpiexec ${MPI_ARG} ${EXE} ${EXE_ARG}"
 echo "COMMAND= ${COMMAND}"
 ${COMMAND}
 </pre>
-</form><!-- form#namd_form -->
+{%- filter indent(_indent_level+4) %}
+<h2>The Code</h2>
+{{ form.textarea('code', classes=['code']) }}
+{%- endfilter -%}
+{% filter indent(_indent_level) %}
+</form><!-- form#lammps_kokkos_form-->
+{%- endfilter -%}
