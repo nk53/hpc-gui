@@ -7,6 +7,34 @@ Currently, HPC-GUI assumes you have the following installed and loaded:
 
 If not, you should install Balsam by following the instructions shown [here](https://balsam.readthedocs.io/en/latest/user-guide/installation/).
 
+Alternative installation approaches:
+
+## Conda
+
+```bash
+# optionally create an environment
+conda env create --name hpcgui python=3.9
+conda activate hpcgui
+
+# install required packages
+conda install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0
+```
+
+Then, edit `.hpcgui_config` and change `conda activate balsam` to `conda activate hpcgui`.
+
+## pip
+
+I have not tested this approach at all so *caveat emptor*.
+
+```bash
+pip install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0
+```
+
+Then, edit `run_server.sh` and remove or comment-out this line:
+```bash
+source .hpcgui_config
+```
+
 # Usage
 
 HPC-GUI is in alpha development stage; it is intended to be run and accessed on your personal computer, but can be made accessible over the internet (see below).
