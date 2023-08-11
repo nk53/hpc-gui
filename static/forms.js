@@ -1,18 +1,3 @@
-/**
- * TODO: pagehide event does NOT do what I thought. Instead, it inserts a new
- * <div data-role="page"> and hides the old page <div>, without destroying it.
- *
- * That means proper event handler updates should not necessarily delete the
- * old handlers. Also, all form event handlers should perform selections
- * relative to the page <div>.
- *
- * IDs are currently fucked in this scheme, since I assumed the cached pages
- * would not actually remain in the DOM. So either jqm caching should be
- * disabled OR all generated IDs must be guaranteed to be unique across pages.
- * The simplest way to accomplish this might be to insert _{{ page }} in all
- * generated IDs.
- */
-
 class PBSOpts {
     initialized = null;
 
@@ -126,12 +111,12 @@ class PBSOpts {
 
     constructor(pbs_text_elem=null, pbs_elems=null) {
         if (pbs_elems === null)
-            this.pbs_elems = $('[name^=PBS]');
+            this.pbs_elems = jq_name('PBS', '^=');
         else
             this.pbs_elems = pbs_elems;
 
         if (pbs_text_elem === null)
-            this.pbs_text_elem = $('#pbs_opts');
+            this.pbs_text_elem = jq_id('pbs_opts');
         else
             this.pbs_text_elem = $(pbs_text_elem);
 
@@ -150,17 +135,13 @@ class PBSOpts {
         this.set_pbs_text();
     }
 
-    clear() {
-        this.pbs_elems.off();
-    }
-
     /**
      * given a jQuery object representing a set of elements belonging to
      * a single memory size widget, returns the memory size as a string like
      * '4gb' or '2kb'
      */
     static get_mem_size(elems) {
-        const num = elems.filter('[id$="[num]"]').val();
+        const num = elems.filter(sel_id('[num]', '$=')).val();
 
         if (!num || num === '0')
             return null;
@@ -170,6 +151,10 @@ class PBSOpts {
 
         return value;
     }
+
+    //clear() {
+    //    this.pbs_elems.off();
+    //}
 
     remove_chunk(chunk_num) {
         const to_remove = jq_name(`[chunk][${chunk_num}]`, '*=');
@@ -196,10 +181,10 @@ class PBSOpts {
 
     /**
      * N.B. jQuery overrides the `this` keyword to reference the event's target
-     * DOM element. Use `event_obj.data.obj` instead.
+     * DOM element. Use `event.data.obj` instead.
      */
-    update(event_obj) {
-        const obj = event_obj.data.obj;
+    update(event) {
+        const obj = event.data.obj;
         const key = first_key(this.name);
 
         if (Object.hasOwn(obj.single_opts, key)) {
@@ -245,7 +230,7 @@ class PBSOpts {
         // cf. https://api.jquery.com/on/#on-events-selector-data-handler
         elems.on('change',
             null,        // use event handler for all elems in pbs_elems
-            {obj: this}, // data to store in event_obj.data
+            {obj: this}, // data to store in event.data
             this.update  // event handler
         );
         elems.trigger('change');
@@ -283,7 +268,7 @@ function jq_name(sel, rel='=') {
 
 // return an name selector; for use in compound selections
 function sel_name(sel, rel='=') {
-    return `[name${rel}"${sel}"]`;
+    return `#${active_page} [name${rel}"${sel}"]`;
 }
 
 // return a jQuery object selected by a single attribute
@@ -291,9 +276,20 @@ function jq_attr(attr, sel, rel='=') {
     return $(sel_attr(attr, sel, rel));
 }
 
+// like above, but handles IDs that are unique across all pages
+function sel_id(id, rel='=') {
+    if (['=', '^='].includes(rel))
+        return `[id${rel}"${active_page}_${id}"]`;
+    return `[id${rel}"${id}"]`;
+}
+
+function jq_id(id, rel='=') {
+    return $(sel_id(id, rel));
+}
+
 // return an attribute selection
 function sel_attr(attr, sel, rel='=') {
-    return `[${attr}${rel}"${sel}"]`;
+    return `#${active_page} [${attr}${rel}"${sel}"]`;
 }
 
 /**
@@ -316,7 +312,7 @@ function num_to_range_list(target, src) {
 }
 
 function update_code() {
-    $('[name=code]').val( $('#script_tpl').text() );
+    jq_name('code').val( jq_id('script_tpl').text() );
 }
 
 function toggle_email() {
@@ -331,25 +327,22 @@ function toggle_email() {
     }
 }
 
-var event_handlers = [];
-var pbs_obj = null;
-function setup_form() {
-    // remove any pre-existing event handlers set by this function
-    for (let i = 0; i < event_handlers.length; ++i) {
-        let src = event_handlers[0];
-        let updater = event_handlers[1];
-        $(src).off(updater);
-    }
+var active_page = null;
+var loaded_pages = [];
+function setup_form(event, ui) {
+    active_page = ui.toPage[0].id;
 
-    if (pbs_obj !== null)
-        pbs_obj.clear();
+    if (loaded_pages.includes(active_page))
+        return;
+
+    var pbs_obj;
 
     // data-src elements get their contents from form values
-    $("[data-src]:not([data-function])").each(function() {
+    $(`#${active_page} [data-src]:not([data-function])`).each(function() {
         // element to update
         const target = $(this);
         // form input whose value is used for updating
-        const src = $(`[name=${target.attr('data-src')}]`);
+        const src = $(`#${active_page} [name=${target.attr('data-src')}]`);
 
         // put input's value directly in target
         function updater() {
@@ -361,11 +354,9 @@ function setup_form() {
 
         // also do it now
         updater();
-
-        event_handlers.push([src, updater]);
     });
 
-    $("[data-function]").each(function() {
+    $(`#${active_page} [data-function]`).each(function() {
         const target = $(this);
         const callback = eval(target.attr('data-function'));
         const src_name = target.attr('data-src');
@@ -383,32 +374,31 @@ function setup_form() {
 
         src.change(updater);
         updater();
-        event_handlers.push([src, updater]);
     });
 
     jq_name('PBS[mail][use]').change(toggle_email);
     toggle_email();
 
-    var chunk_add_btn = $('#chunk_tpl_add');
-    var chunk_rm_btn = $('#chunk_tpl_rm');
+    var chunk_add_btn = jq_id('chunk_tpl_add');
+    var chunk_rm_btn = jq_id('chunk_tpl_rm');
     var chunk_num_sets = 0;
     chunk_add_btn.on('click', function() {
         ++chunk_num_sets;
-        let nsb = `[${chunk_num_sets}]`; // nsb = chunk_num_sets with brackets
+        let cnsb = `[${chunk_num_sets}]`; // cnsb = chunk_num_sets with brackets
 
         // make a copy of the template
-        let tpl = $("#chunk_tpl");
+        let tpl = jq_id("chunk_tpl");
         let new_set = tpl.clone();
         // change all [0] -> [nchunks]
-        new_set.find('[id*="[0]"]').each(function() {
-            this.id = this.id.replace('[0]', nsb);
+        new_set.find(sel_id('[0]', '*=')).each(function() {
+            this.id = this.id.replace('[0]', cnsb);
             let new_name = $(this).attr('name');
             if (new_name !== undefined)
-                new_name = new_name.replace('[0]', nsb);
+                new_name = new_name.replace('[0]', cnsb);
             $(this).attr('name', new_name);
         });
         new_set.find('[for*="[0]"]').each(function() {
-            let new_for = $(this).attr('for').replace('[0]', nsb);
+            let new_for = $(this).attr('for').replace('[0]', cnsb);
             $(this).attr('for', new_for);
         });
         // set the chunk set's label
@@ -420,7 +410,7 @@ function setup_form() {
         });
 
         // append copy to this section
-        new_set.attr('id', `chunk_${chunk_num_sets}`);
+        new_set.attr('id', `${active_page}_chunk_${chunk_num_sets}`);
         new_set.appendTo(tpl.parent());
         new_set.show();
 
@@ -437,7 +427,7 @@ function setup_form() {
         if (!chunk_num_sets)
             return;
 
-        $(`#chunk_${chunk_num_sets}`).remove();
+        jq_id(`chunk_${chunk_num_sets}`).remove();
         pbs_obj.remove_chunk(chunk_num_sets);
         --chunk_num_sets;
 
@@ -445,13 +435,14 @@ function setup_form() {
             chunk_rm_btn.hide();
     });
     chunk_rm_btn.hide();
-    $('#chunk_tpl').hide();
+    jq_id('chunk_tpl').hide();
 
     pbs_obj = new PBSOpts();
 
     // <textarea> elems only auto-adjust their size on keyup, not on change
-    $('textarea').trigger('keyup');
+    $(`#${active_page} textarea`).trigger('keyup');
+
+    loaded_pages.push(active_page);
 }
 
-$(document).ready(setup_form);
-$(document).on('pagehide', setup_form);
+$(document).on('pagecontainerchange', setup_form);

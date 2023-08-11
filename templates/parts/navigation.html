@@ -1,5 +1,5 @@
 {%- import 'parts/list.html' as list -%}
-<div id="navigation" data-role="panel" data-display="overlay">
+<div id="{{ page_id }}_navigation" data-role="panel" data-display="overlay">
     {{ list.anchor_list(menu, collapsible=True)|indent }}
 </div><!-- navigation -->
 <div class="expanded-nav-left">

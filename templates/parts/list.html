@@ -1,4 +1,4 @@
-{%- import 'parts/utils.html' as utils -%}
+{%- import 'parts/utils.html' as utils with context -%}
 {%- macro anchor_list(items, collapsible=False, ul_attrs=None) -%}
 {%- if ul_attrs is none %}{% set ul_attrs = {} %}{% endif -%}
 <ul{{ utils.cat_attrs(**ul_attrs) }} data-role="listview">

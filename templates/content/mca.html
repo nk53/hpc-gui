@@ -1,6 +1,6 @@
-{%- import 'parts/form.html' as form -%}
-{%- import 'parts/pbs.html' as pbs -%}
-<form id="mca_form" action="/mca" method="post">
+{%- import 'parts/form.html' as form with context -%}
+{%- import 'parts/pbs.html' as pbs with context -%}
+<form id="{{ page_id }}_form" action="/{{ page_id }}" method="post">
 {%- filter indent(_indent_level+4) %}
 {{ form.path('namd_path', value='/soft/applications/NAMD/namd3', label="Path to NAMD executable") }}
 {{ form.path('charmrun_path', value='/soft/applications/NAMD/namd3.charmrun',
@@ -18,10 +18,10 @@
 {{ form.select('system', [
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
-{{ pbs.resources() }}
+{{ pbs.resources(mpiprocs=True) }}
 {%- endfilter %}
-<pre id="script_tpl" class="code" style="display: none;">#!/bin/bash -l
-<span id="pbs_opts">#PBS placeholder_text</span>
+<pre id="{{ page_id }}_script_tpl" class="code" style="display: none;">#!/bin/bash -l
+<span id="{{ page_id }}_pbs_opts">#PBS placeholder_text</span>
 
 EXE=<span data-src="namd_path"></span>
 CHARMRUN=<span data-src="charmrun_path"></span>

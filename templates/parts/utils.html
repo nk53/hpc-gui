@@ -40,3 +40,16 @@
 {%- include path -%}
 {% endfilter %}
 {%- endmacro -%}
+
+{# return a page-safe ID; must import with context to use this macro #}
+{%- macro get_id_attr(id=None) -%}
+{%- if id is not none -%}
+{{ ' ' }}id="{{ get_id(id) }}"
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro get_id(id=None) -%}
+{%- if id is not none -%}
+{{ page_id }}_{{ id }}
+{%- endif -%}
+{%- endmacro -%}

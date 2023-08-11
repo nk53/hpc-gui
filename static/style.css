@@ -60,7 +60,8 @@ div.expanded-nav-left {
         /* autoexpand submenus */
         min-width: max-content;
     }
-    a#nav_btn {
+    /* :not(#fakeID) pseudo-selector needed to add selector weight */
+    a[id$=nav_btn]:not(#nav_btn) {
         display: none;
     }
     div.expanded-nav-left li:not(:hover) a::after {
@@ -123,4 +124,10 @@ div.ui-field-contain div.ui-controlgroup-controls {
 
 .ui-field-contain.memory-size div.ui-input-text {
     width: 25%;
+}
+
+/* not sure why, but jqm theme leaves unhovered, selected text unreadable */
+.ui-page-theme-a div.expanded-nav-left .ui-btn.ui-btn-active:not(:hover) {
+    color: rgb(51, 51, 51);
+    text-shadow: unset;
 }
