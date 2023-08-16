@@ -152,10 +152,6 @@ class PBSOpts {
         return value;
     }
 
-    //clear() {
-    //    this.pbs_elems.off();
-    //}
-
     remove_chunk(chunk_num) {
         const to_remove = jq_name(`[chunk][${chunk_num}]`, '*=');
         this.pbs_elems = this.pbs_elems.not(to_remove);
@@ -168,7 +164,7 @@ class PBSOpts {
         this.pbs_text_elem.text(new_text);
         update_code();
     }
- 
+
     update_memory(elems) {
         const key = first_key(elems[0].name);
         const value = PBSOpts.get_mem_size(elems);
@@ -315,11 +311,21 @@ function update_code() {
     jq_name('code').val( jq_id('script_tpl').text() );
 }
 
-function toggle_email() {
-    let box = jq_name('PBS[mail][use]');
-    if (box.length) {
-        box = box[0];
-        let email_opts = $('.email-options');
+function toggle_email(assign_page) {
+    var assigned_page = assign_page;
+    if (!assign_page)
+        console.log('Missing page assignment for toggle_email()');
+
+    let box_sel = `#${assigned_page} [name='PBS[mail][use]']`;
+    var box = $(box_sel);
+    var email_opts = $(`#${assigned_page} .email-options`);
+
+    if (!box.length)
+        console.log(`Missing box: ${box_sel}`);
+
+    box = box[0];
+
+    return function() {
         if (box.checked)
             email_opts.show();
         else
@@ -333,6 +339,9 @@ function setup_form(event, ui) {
     active_page = ui.toPage[0].id;
 
     if (loaded_pages.includes(active_page))
+        return;
+
+    if (['home', '404'].includes(active_page))
         return;
 
     var pbs_obj;
@@ -376,8 +385,9 @@ function setup_form(event, ui) {
         updater();
     });
 
-    jq_name('PBS[mail][use]').change(toggle_email);
-    toggle_email();
+    var email_toggle = toggle_email(active_page);
+    jq_name('PBS[mail][use]').change(email_toggle);
+    email_toggle();
 
     var chunk_add_btn = jq_id('chunk_tpl_add');
     var chunk_rm_btn = jq_id('chunk_tpl_rm');
@@ -443,6 +453,13 @@ function setup_form(event, ui) {
     $(`#${active_page} textarea`).trigger('keyup');
 
     loaded_pages.push(active_page);
+    console.log(active_page);
 }
 
+$(document).on('pageload', function(event, ui) {
+    active_page = ui.toPage[0].id;
+    let index = loaded_pages.indexOf(active_page);
+    if (index !== -1)
+        loaded_pages.splice(index, 1); // remove it to allow re-loading
+});
 $(document).on('pagecontainerchange', setup_form);

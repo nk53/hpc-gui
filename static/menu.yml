@@ -14,12 +14,12 @@ lammps:
 namd:
   text: NAMD
   sub_menu:
-    mca:
-      text: Multi-Copy Algorithm
-    namd_ensemble:
-      text: NAMD Ensemble
     namd_single:
       text: NAMD Single Node
+    namd_ensemble:
+      text: NAMD Ensemble
+    mca:
+      text: Multi-Copy Algorithm
 openmm:
   text: OpenMM
 vasp:
