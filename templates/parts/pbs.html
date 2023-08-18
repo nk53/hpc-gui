@@ -57,7 +57,7 @@
         <div><p style="float: left;">Chunk set #<span></span>:</p></div>
 {%- filter indent(width=8) %}
 {{ form.positive_integer('PBS[chunk][0][nchunks]', label='Chunks', **{'data-enhanced': 'true'}) }}
-{{ form.positive_integer('PBS[chunk][0][ncpus]', label='CPUs', **{'data-enhanced': 'true'}) }}
+{{ form.positive_integer('PBS[chunk][0][ncpus]', label='CPUs', value='', **{'data-enhanced': 'true'}) }}
 {{ form.memory_size('PBS[chunk][0][mem]', label='Memory', value='', num_opts={'optional': True}, no_enhance=True) }}
 {%- for pint_opt in (('mpiprocs', 'MPI processes'), ('ompthreads', 'OMP threads')) %}
     {%- if pint_opt[0] in kwargs %}
