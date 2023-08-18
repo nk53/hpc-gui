@@ -1,4 +1,32 @@
 {%- import 'parts/utils.html' as utils with context -%}
+
+{%- macro tooltip(id, lookup=None) -%}
+{%- if lookup is none %}{% set lookup = id %}{% endif -%}
+{%- set text = auto_tooltip(id) -%}
+{%- if text is not none -%}
+<!-- {{ text }} -->
+{{ tooltip_anchor(id) }}
+{{ tooltip_div(id, text) }}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro tooltip_anchor(href_id) -%}
+<a href="#{{ href_id }}" data-rel="popup" data-transition="none" class="hpc-tooltip-btn ui-btn ui-alt-icon ui-nodisc-icon ui-btn-inline ui-icon-info ui-btn-icon-notext" title="Learn more">Learn more</a>
+{%- endmacro -%}
+
+{%- macro tooltip_div(id, text) -%}
+{%- set attrs = {
+    'classes': ['ui-content'],
+    'data-theme': 'a',
+    'style': 'max-width: 350px;',
+} -%}
+{%- do attrs['classes'].extend(kwargs.pop('classes', [])) -%}
+{%- do attrs.update(kwargs) -%}
+<div data-role="popup" id="{{ id }}"{{ utils.cat_attrs(**attrs) }}>
+    {% autoescape false %}{{ text }}{% endautoescape %}
+</div>
+{%- endmacro -%}
+
 {%- macro field_contain(add_div) -%}
 {%- do kwargs.setdefault('wrapper_attrs', {}) -%}
 {%- do kwargs['wrapper_attrs'].setdefault('classes', ['ui-field-contain']) -%}
@@ -17,8 +45,10 @@
 
 {%- macro label_field(text, _for=None) -%}
 {%- if text is not none -%}
+{%- set tt = kwargs.pop('tooltip', None) -%}
+{%- if tt %}{{ tooltip_div(_for~'_tooltip', tt) }}{% endif -%}
 <label{% if _for is not none %} for="{{ _for }}"{% endif -%}
-{{ utils.cat_attrs(**kwargs) }}>{{ text|e }}</label>
+{{ utils.cat_attrs(**kwargs) }}>{{ text|e }}{% if tt %}{{ tooltip_anchor(_for~'_tooltip') }}{% endif %}</label>
 {%- endif -%}
 {%- endmacro -%}
 
@@ -31,7 +61,7 @@
 {%- macro input(name, value='', type='text', size=20, label=None, add_div=True, mini=False) -%}
 {%- call(kwargs) field_contain(add_div, **kwargs) -%}
 <!-- input[name="{{ name }}"] -->
-{{ label_field(label, _for=utils.get_id(name)) }}
+{{ label_field(label, _for=utils.get_id(name), tooltip=auto_tooltip(name)) }}
 <input type="{{ type }}"{{ utils.get_id_attr(name) }} name="{{ name }}" value="{{ value|e
         }}"{% if size is not none %} size="{{ size }}"{% endif -%}
         {% if mini %} data-mini="true"{% endif -%}
@@ -42,13 +72,14 @@
 {%- macro checkbox(name, checked=False, label=None) -%}
 <input type="checkbox"{{ utils.get_id_attr(name) }} name="{{ name }}"{{ utils.cat_attrs(**kwargs) }}>
 {{ label_field(label, _for=utils.get_id(name)) }}
+{{ tooltip(name~'_tooltip', name) }}
 {%- endmacro -%}
 
-{%- macro checkbox_group(options, legend=None, horizontal=False) -%}
-<fieldset{{ utils.get_id_attr(name) }} data-role="controlgroup"
+{%- macro checkbox_group(id, options, legend=None, horizontal=False) -%}
+<fieldset{{ utils.get_id_attr(id) }} data-role="controlgroup"
      {%- if horizontal %} data-type="horizontal"{% endif %}>
 {%- if legend is not none %}
-    <legend>{{ legend }}</legend>
+<legend>{{ legend }}{{ tooltip(id~'_tooltip', id) }}</legend>
 {%- endif -%}
 {%- for option in options -%}
     {%- if option is mapping -%}
@@ -78,7 +109,7 @@
 {%- endmacro -%}
 
 {%- macro textarea(name, value='', label=None) -%}
-{{ label_field(label, _for=utils.get_id(name), classes=['textarea-label']) }}
+{{ label_field(label, _for=utils.get_id(name), classes=['textarea-label'], tooltip=auto_tooltip(name)) }}
 <textarea{{ utils.get_id_attr(name) }} name="{{ name }}" {{ utils.cat_attrs(**kwargs) }}>{{ value|e }}</textarea>
 {%- endmacro -%}
 
@@ -90,7 +121,7 @@
 
 {%- macro select(name, options, label=None, add_div=True) -%}
 {%- call(kwargs) field_contain(add_div) -%}
-{{ label_field(label, _for=utils.get_id(name)) }}
+{{ label_field(label, _for=utils.get_id(name), tooltip=auto_tooltip(name)) }}
 <select{{ utils.get_id_attr(name) }} name="{{ name }}">
 {%- for option in options %}
     {%- if option is mapping %}
@@ -112,7 +143,7 @@
 <fieldset data-role="controlgroup"{% if horizontal %} data-type="horizontal"{% endif -%}
           {% if mini %} data-mini="True"{% endif %}{% if no_enhance %} data-enhanced="true"{% endif %}>
 {% endif -%}
-    {{ legend_field(legend) }}
+    {{ legend_field(legend, _for=name, tooltip=auto_tooltip(name)) }}
     {%- for option in options %}
         {%- if option is mapping %}
             {%- set value = option['value'] %}
@@ -167,10 +198,10 @@
 {%- set sname = name+'[scale]' -%}
 <div class="ui-field-contain memory-size">
 {%- filter indent %}
-{{ label_field(label) }}
+{{ label_field(label, _for=name, tooltip=auto_tooltip(name)) }}
 <div{{ utils.get_id_attr(name) }} data-role="controlgroup" data-type="horizontal" data-mini="True">
 {{ positive_integer(iname, add_div=False, value=value, pattern=pattern, **num_opts) }}
-{{ radio(sname, [('GB', 'GB', True), 'MB', 'kB', 'B' ], **radio_opts) }}
+{{ radio(sname, [('GB', 'GB', True), 'MB', 'kB'], **radio_opts) }}
 </div><!-- horizontal controlgroup -->
 {%- endfilter %}
 </div><!-- .ui-field-contain -->

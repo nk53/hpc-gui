@@ -126,6 +126,11 @@ div.ui-field-contain div.ui-controlgroup-controls {
     width: 25%;
 }
 
+.ui-btn.hpc-tooltip-btn:not(#fake_button_id) {
+    background: none;
+    border: 0;
+}
+
 /* not sure why, but jqm theme leaves unhovered, selected text unreadable */
 .ui-page-theme-a div.expanded-nav-left .ui-btn.ui-btn-active:not(:hover) {
     color: rgb(51, 51, 51);

@@ -283,6 +283,14 @@ function jq_id(id, rel='=') {
     return $(sel_id(id, rel));
 }
 
+function jq_label(for_id, rel='=') {
+    return $(sel_label(for_id, rel));
+}
+
+function sel_label(for_id, rel='=') {
+    return `label[for${rel}"${active_page}_${for_id}"]`;
+}
+
 // return an attribute selection
 function sel_attr(attr, sel, rel='=') {
     return `#${active_page} [${attr}${rel}"${sel}"]`;
@@ -351,7 +359,7 @@ function setup_form(event, ui) {
         // element to update
         const target = $(this);
         // form input whose value is used for updating
-        const src = $(`#${active_page} [name=${target.attr('data-src')}]`);
+        const src = jq_name(target.attr('data-src'));
 
         // put input's value directly in target
         function updater() {
@@ -392,7 +400,8 @@ function setup_form(event, ui) {
     var chunk_add_btn = jq_id('chunk_tpl_add');
     var chunk_rm_btn = jq_id('chunk_tpl_rm');
     var chunk_num_sets = 0;
-    chunk_add_btn.on('click', function() {
+
+    function chunk_add_func() {
         ++chunk_num_sets;
         let cnsb = `[${chunk_num_sets}]`; // cnsb = chunk_num_sets with brackets
 
@@ -431,9 +440,9 @@ function setup_form(event, ui) {
         pbs_obj.append_chunk(new_set);
 
         chunk_rm_btn.show();
-    });
+    }
 
-    chunk_rm_btn.on('click', function() {
+    function chunk_rm_func() {
         if (!chunk_num_sets)
             return;
 
@@ -443,11 +452,54 @@ function setup_form(event, ui) {
 
         if (!chunk_num_sets)
             chunk_rm_btn.hide();
-    });
+    }
+
+    chunk_rm_btn.on('click', chunk_rm_func);
+    chunk_add_btn.on('click', chunk_add_func);
+
     chunk_rm_btn.hide();
     jq_id('chunk_tpl').hide();
 
     pbs_obj = new PBSOpts();
+
+    // autofill chunks if a default has been set
+    const default_chunks = jq_id('default_chunks').val();
+    const memory_opts = ['mem'];  // TODO: support more chunk-level memory opts?
+    const mem_size_re = /([0-9])+([^0-9]+)/g;
+    const mem_size_map = {'gb': 'GB', 'mb': 'MB', 'kb': 'kB'};
+    if (default_chunks) {
+        const chunk_sets = default_chunks.split('+');
+        for (let chunk of chunk_sets) {
+            chunk_add_func();
+
+            let opts = chunk.split(':');
+            if (!opts[0].includes('='))
+                jq_id(`PBS[chunk][${chunk_num_sets}][nchunks]`).val(opts.shift());
+
+            for (let opt of opts) {
+                const [name, value] = opt.split('=');
+                const prefix = `PBS[chunk][${chunk_num_sets}][${name}]`;
+                if (memory_opts.includes(name)) {
+                    let num, scale;
+                    try {
+                        [, num, scale] = [...value.matchAll(mem_size_re)][0];
+                    } catch (error) {
+                        console.log(`Invalid memory size option: ${opt}`);
+                        console.error(error);
+                        continue;
+                    }
+
+                    if (Object.keys(mem_size_map).includes(scale))
+                        scale = mem_size_map[scale];
+
+                    jq_id(`${prefix}[num]`).val(num);
+                    jq_label(`${prefix}[scale]-${scale}`).click();
+                } else {
+                    jq_id(prefix).val(value);
+                }
+            }
+        }
+    }
 
     // <textarea> elems only auto-adjust their size on keyup, not on change
     $(`#${active_page} textarea`).trigger('keyup');

@@ -25,5 +25,5 @@ async def page(request: Request, page: str):
 
     return templates.TemplateResponse("layouts/single_page.html", {
         "request": request, "page_id": page, "menu": MENU,
-        "page": PAGES[page],
+        "page": PAGES[page], "auto_tooltip": utils.auto_tooltip
     })

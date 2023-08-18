@@ -18,7 +18,7 @@
 {{ form.select('system', [
     ('any', 'Any'),
     ('polaris', 'Polaris', True)], label="System") }}
-{{ pbs.resources(mpiprocs=True) }}
+{{ pbs.resources(mpiprocs=True, default_chunks="4:mpiprocs=4:system=polaris") }}
 {%- endfilter %}
 <pre id="{{ page_id }}_script_tpl" class="code" style="display: none;">#!/bin/bash -l
 <span id="{{ page_id }}_pbs_opts">#PBS placeholder_text</span>

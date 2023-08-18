@@ -11,7 +11,7 @@
 <div class="email-options ui-body ui-body-a ui-corner-all">
 {%- filter indent %}
 {{ form.input('PBS[mail][addr]', label='Email address') }}
-{{ form.checkbox_group([
+{{ form.checkbox_group('PBS_mail_opts', [
     {
         'label': 'job aborted',
         'name': 'PBS[mail][a]',
@@ -34,12 +34,12 @@
     ('pack', 'all chunks on one host (pack)'),
     ('scatter', 'one host per chunk (scatter)'),
     ('vscatter', 'one host per vnode (vscatter)'),
-], label='Resource (chunk) placement strategy') }}
+], label='Chunk arrangement') }}
 {{ form.select('PBS[place][sharing]', [
     ('excl', 'only this job can use the chosen vnodes (excl)'),
     ('exclhost', 'reserve whole host for this job (exclhost)'),
     ('shared', 'vnodes can be shared with other jobs (shared)'),
-], label='Sharing options') }}
+], label='Chunk sharing') }}
 <h3>Job-wide resource limits</h3>
 {{ form.input('PBS[walltime]', label='Walltime', value='0:30:00', add_div=True, mini=True) }}
 {{ form.input('PBS[pcput]', label='Per-process CPU time', add_div=True, mini=True) }}
@@ -49,7 +49,7 @@
 {%- endmacro -%}
 
 {%- macro chunk_limits(tid='chunk_tpl') -%}
-<h3>Per-chunk resource limits</h3>
+<h3>Per-chunk resource limits {{ form.tooltip('PBS[chunk][help]') }}</h3>
 <div class="chunk-limits">
     <button{{ utils.get_id_attr(tid+'_add') }} type="button" data-mini="true" data-inline="true" data-icon="plus" data-enhanced="true">Add chunk set</button>
     <button{{ utils.get_id_attr(tid+'_rm') }} type="button" data-mini="true" data-inline="true" data-icon="minus" data-enhanced="true">Remove chunk set</button>
@@ -67,4 +67,7 @@
 {%- endfilter -%}
     </div>
 </div><!-- .chunk-limits -->
+{%- if 'default_chunks' in kwargs %}
+<input type="hidden" id="{{ page_id }}_default_chunks" value="{{ kwargs['default_chunks'] }}">
+{% endif -%}
 {%- endmacro -%}
