@@ -9,7 +9,7 @@
 {%- endmacro -%}
 
 {# wraps css_selector(...) in an HTML comment #}
-{%- macro comment_css_sel(args=none) -%}
+{%- macro comment_css_sel(args=None) -%}
 {%- if args is none %}{% set args = {} %}{% endif -%}
 {%- if kwargs is none %}{% set kwargs = {} %}{% endif -%}
 {%- do kwargs.update(args) -%}

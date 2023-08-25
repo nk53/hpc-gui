@@ -2,7 +2,7 @@
 
 {%- macro tooltip(id, lookup=None) -%}
 {%- if lookup is none %}{% set lookup = id %}{% endif -%}
-{%- set text = auto_tooltip(id) -%}
+{%- set text = auto_tooltip(lookup) -%}
 {%- if text is not none -%}
 <!-- {{ text }} -->
 {{ tooltip_anchor(id) }}

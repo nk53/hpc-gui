@@ -1,37 +1,44 @@
 import re
-from typing import Union
+from typing import Any, Union
 
 import yaml
 
 # groups strings[like][this] into their individual tokens
-p_re = re.compile(r'^([^[]*)|\[([^]]*)\]')
+P_RE = re.compile(r'^([^[]*)|\[([^]]*)\]')
+TOOLTIPS = None
 
 
-def read_yaml(filename: str) -> str:
+def read_yaml(filename: str) -> Any:
+    """Load a YAML file by name"""
     with open(filename) as file_obj:
         return yaml.load(file_obj, Loader=yaml.FullLoader)
-
-
-TOOLTIPS = read_yaml('static/tooltips.yml')
 
 
 def auto_tooltip(name: str, debug: bool = False) -> Union[str, None]:
     """Return tooltip string if it exists, else None
 
     Tooltip names derive from the field name, which is subscripted with
-    either underscores_like_this or brackets[like][this]. Brackets are
+    either ``underscores_like_this`` or ``brackets[like][this]``. Brackets are
     checked first, then subscripts.
 
     If both of those checks fail, then one last check is performed by
-    inserting `_` between keys from right to left, e.g.:
+    inserting ``_`` between keys from right to left, e.g.:
+
+    .. code-block:: text
+
         brackets[like][this] --> KeyError
         brackets[like_this] --> KeyError
         brackets_like_this --> match
 
     Thus, only leaf nodes may contain underscores in tooltips.yml.
 
-    Finally, if no match is found, then None is returned.
+    Finally, if no match is found, then :python:`None` is returned.
     """
+    global TOOLTIPS
+
+    if TOOLTIPS is None:
+        TOOLTIPS = read_yaml('static/tooltips.yml')
+
     def lookup_keys(keys):
         if debug:
             print(f'lookup_keys({keys}) = ', end='')
@@ -75,7 +82,7 @@ def auto_tooltip(name: str, debug: bool = False) -> Union[str, None]:
         return tooltip
 
     if '[' in name:
-        keys = [''.join(n) for n in re.findall(p_re, name)]
+        keys = [''.join(n) for n in re.findall(P_RE, name)]
 
         return get_tooltip(keys)
 

@@ -1,9 +1,29 @@
+/**
+ * Manages most update events for PBS related form elements and translates
+ * their values into the corresponding ``#PBS`` text.
+ */
 class PBSOpts {
+    /**
+     * Object containing each of the lines, keyed by option name.
+     */
+    pbs_lines = null;
+
+    /**
+     * Signals whether function scope vars have been created, so
+     * that the global/class namespaces are not as cluttered
+     */
     initialized = null;
 
     /**
-     * for the common case were an option is something like:
-     *   -opt "value"
+     * For the common case where an option is something like:
+     *   ``#PBS -opt "value"``
+     *
+     * Each key is the first subscript in the element or element group's
+     * name attribute, and the value is option string.
+     *
+     * E.g., for ``<input name="PBS[account]">`` the key is ``account``. Since
+     * the result of the account input will always be ``#PBS -A`` followed by
+     * the input's value, the ``single_opts`` value is just ``-A``.
      */
     single_opts = {
         'account': '-A',
@@ -13,16 +33,34 @@ class PBSOpts {
     };
 
     /**
-     * maps option name to a function wrapped template string taking the
+     * Maps option name to a function wrapped template string taking the
      * option value and returning the option text
+     *
+     * Each callback has the following type:
+     *
+     * .. js:function:: templates.callback(value)
+     *
+     *    :param value: value of the updated element
+     *    :type value: any
+     *    :return: PBS option text (not including ``#PBS``)
+     *    :rtype: String or null
      */
     templates = {
         'pcput': value => `-l pcput=${value}`,
     };
 
     /**
-     * maps option name to function taking a list of jQuery objects and
+     * Maps option name to callback taking a list of jQuery objects and
      * returning the option text OR an array of option texts
+     *
+     * Each callback has the following type:
+     *
+     * .. js:function:: updaters.callback(elems)
+     *
+     *    :param elems: group of elements related to this PBS option
+     *    :type elems: jQuery
+     *    :return: complete PBS option text (including ``#PBS``)
+     *    :rtype: String or null
      */
     updaters = {
         'chunk': function(elems) {
@@ -109,6 +147,12 @@ class PBSOpts {
         'pvmem': this.update_memory,
     };
 
+    /**
+     * Absent args are auto-determined from the currently active form.
+     *
+     * @param {jQuery} [pbs_text_elem] object to update
+     * @param {jQuery} [pbs_elems] elements to watch for updates
+     */
     constructor(pbs_text_elem=null, pbs_elems=null) {
         if (pbs_elems === null)
             this.pbs_elems = jq_name('PBS', '^=');
@@ -124,7 +168,12 @@ class PBSOpts {
         this.watch_elems(this.pbs_elems);
         this.set_pbs_text();
     }
-
+    /**
+     * Adds event handlers for new chunk resource selections when the user
+     * clicks 'Add chunk set'
+     *
+     * @param {jQuery} elems - new chunk set to watch for updates
+     */
     append_chunk(elems) {
         // filter elems to only those whose name
         // starts with PBS (including descendants)
@@ -136,9 +185,11 @@ class PBSOpts {
     }
 
     /**
-     * given a jQuery object representing a set of elements belonging to
-     * a single memory size widget, returns the memory size as a string like
-     * '4gb' or '2kb'
+     * Reads a memory size widget's state and returns a PBS compatible memory
+     * size.
+     *
+     * @param {jQuery} elems - root of a memory size widget
+     * @returns {String} mem_size - e.g., ``4gb`` or ``2kb``
      */
     static get_mem_size(elems) {
         const num = elems.filter(sel_id('[num]', '$=')).val();
@@ -152,12 +203,20 @@ class PBSOpts {
         return value;
     }
 
+    /**
+     * Unwatches a chunk set and updates PBS text
+     *
+     * @param {Number} chunk_num - chunk to unwatch
+     */
     remove_chunk(chunk_num) {
         const to_remove = jq_name(`[chunk][${chunk_num}]`, '*=');
         this.pbs_elems = this.pbs_elems.not(to_remove);
         jq_name('[chunk][0][nchunks]', '*=').trigger('change');
     }
 
+    /**
+     * Concatenates :js:attr:`pbs_lines` and inserts them into PBS text
+     */
     set_pbs_text() {
         const lines = [...Object.values(this.pbs_lines)];
         const new_text = lines.join("\n");
@@ -165,6 +224,12 @@ class PBSOpts {
         update_code();
     }
 
+    /**
+     * Returns a PBS option line corresponding to a job-wide memory resource
+     *
+     * @param {jQuery} elems
+     * @returns {String} full PBS option text
+     */
     update_memory(elems) {
         const key = first_key(elems[0].name);
         const value = PBSOpts.get_mem_size(elems);
@@ -176,8 +241,13 @@ class PBSOpts {
     }
 
     /**
-     * N.B. jQuery overrides the `this` keyword to reference the event's target
-     * DOM element. Use `event.data.obj` instead.
+     * Calls the updater associated with a watched PBS input that was changed and
+     * updates the PBS option text accordingly.
+     *
+     * N.B. jQuery overrides the ``this`` keyword to reference the event's target
+     * DOM element. Use ``event.data.obj`` instead.
+     *
+     * @param {jQuery.Event} event - update event object
      */
     update(event) {
         const obj = event.data.obj;
@@ -220,6 +290,11 @@ class PBSOpts {
             obj.set_pbs_text();
     }
 
+    /**
+     * Sets up ``change`` event handlers.
+     *
+     * @param {jQuery} elems - elements to watch
+     */
     watch_elems(elems) {
         this.initialized = false;
 
@@ -236,8 +311,12 @@ class PBSOpts {
 }
 
 /**
- * given a string that looks like `some[text][with][brackets]`, return the
+ * Given a string that looks like ``some[text][with][brackets]``, return the
  * part inside the first set of square brackets `[]`
+ *
+ * @param {String} str - string to check
+ * @param {Number} n - index of key to return
+ * @returns {String} key
  */
 function nth_key(str, n=0) {
     const subscript_re = /\[([^\]]*)\]/g; // match text inside these: []
@@ -250,6 +329,9 @@ function nth_key(str, n=0) {
     return key;
 }
 
+/**
+ * Shortcut for :js:func:`nth_key` with ``n=0``.
+ */
 function first_key(str) {
     return nth_key(str);
 }
@@ -257,49 +339,94 @@ function first_key(str) {
 /**
  * Shortcuts to select jQuery elements by name or other attribute
  */
-// return jQuery object with name selector; for name-only selections
+
+/**
+ * Return jQuery object with name selector; for name-only selections
+ *
+ * @param {String} sel - name to select
+ * @param {String} rel - relational operator
+ * @returns {jQuery} elements
+ */
 function jq_name(sel, rel='=') {
     return $(sel_name(sel, rel));
 }
 
-// return an name selector; for use in compound selections
+/**
+ * Return an name selector string; for use in compound selections
+ *
+ * @returns {String} CSS selector
+ */
 function sel_name(sel, rel='=') {
     return `#${active_page} [name${rel}"${sel}"]`;
 }
 
-// return a jQuery object selected by a single attribute
+/**
+ * Select elements by a single attribute
+ *
+ * @returns {jQuery} elements
+ */
 function jq_attr(attr, sel, rel='=') {
     return $(sel_attr(attr, sel, rel));
 }
 
-// like above, but handles IDs that are unique across all pages
+/**
+ * Return an attribute selector string
+ *
+ * @returns {String} CSS selector
+ */
+function sel_attr(attr, sel, rel='=') {
+    return `#${active_page} [${attr}${rel}"${sel}"]`;
+}
+
+/**
+ * Return an ID selector that is unique across all pages
+ *
+ * @returns {String} CSS selector
+ */
 function sel_id(id, rel='=') {
     if (['=', '^='].includes(rel))
         return `[id${rel}"${active_page}_${id}"]`;
     return `[id${rel}"${id}"]`;
 }
 
+/**
+ * Return a jQuery objected selected by ID (unique across pages)
+ *
+ * @returns {jQuery} element
+ */
 function jq_id(id, rel='=') {
     return $(sel_id(id, rel));
 }
 
+/**
+ * Select an input's label
+ *
+ * @param {String} for_id - ID of ``<input>`` element
+ * @param {String} [rel]
+ * @returns {jQuery} element
+ */
 function jq_label(for_id, rel='=') {
     return $(sel_label(for_id, rel));
 }
 
+/**
+ * @param {String} for_id - ID of ``<input>`` element
+ * @param {String} [rel]
+ * @returns {String} CSS selector
+ */
 function sel_label(for_id, rel='=') {
     return `label[for${rel}"${active_page}_${for_id}"]`;
-}
-
-// return an attribute selection
-function sel_attr(attr, sel, rel='=') {
-    return `#${active_page} [${attr}${rel}"${sel}"]`;
 }
 
 /**
  *  Callback functions should take 2 args:
  *      target  the element to update
  *      src     the form input whose value is used for updating
+ */
+
+/**
+ * Converts a number to a comma separated list of numbers from 1 to the
+ * target's number. E.g., ``4`` becomes ``1,2,3,4``.
  */
 function num_to_range_list(target, src) {
     let from = $(target).attr('data-range-start');
@@ -315,10 +442,20 @@ function num_to_range_list(target, src) {
     target.html(nums.join(','));
 }
 
+/**
+ * Applies updates from shell script template to the code textarea
+ */
 function update_code() {
     jq_name('code').val( jq_id('script_tpl').text() );
 }
 
+/**
+ * Returns a callback function to toggle visibility of an email option
+ * subsection.
+ *
+ * @params {String} assign_page - page_id of the currently active page
+ * @return {function} callback - the toggler
+ */
 function toggle_email(assign_page) {
     var assigned_page = assign_page;
     if (!assign_page)
@@ -343,6 +480,13 @@ function toggle_email(assign_page) {
 
 var active_page = null;
 var loaded_pages = [];
+
+/**
+ * Handles page changes, initializes event handlers
+ *
+ * @param {jQuery.Event} event - this is ignored
+ * @param {Object} ui - see jQuery mobile `pagecontainerload`_
+ */
 function setup_form(event, ui) {
     active_page = ui.toPage[0].id;
 

@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>HPC-GUI documentation &#8212; HPC-GUI 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="hpc-gui-documentation">
+<h1>HPC-GUI documentation<a class="headerlink" href="#hpc-gui-documentation" title="Permalink to this heading">¶</a></h1>
+<p>HPC-GUI is a web application that is intended to be accessed from a web browser. There are pros and cons to this approach.</p>
+<p>Pros:</p>
+<ul class="simple">
+<li><p>A website can be hosted centrally or locally (on the user’s machine)</p></li>
+<li><p>The application is agnostic to the user’s operating system, hardware specs, etc.</p></li>
+<li><p>Common browsers are well-tested, handle a lot of behaviors automatically, and are fault tolerant.</p></li>
+<li><p>Web languages are highly backwards-compatible, so an application that works now is (relatively) future-proof.</p></li>
+</ul>
+<p>Cons:</p>
+<ul class="simple">
+<li><p>Browsers are RAM and CPU intensive.</p></li>
+<li><p>Client-server communication is necessary even when both are located on the same machine.</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#helper-scripts">Helper scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#run-server-sh">run_server.sh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#compile">compile</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server-side API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#routes">Routes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="server.html#home-page">Home page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#page">404 page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#menu-config">Menu config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#pages-config">Pages config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#tooltips-config">Tooltips config</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#module-utils">utils.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="server.html#utils.auto_tooltip"><code class="docutils literal notranslate"><span class="pre">auto_tooltip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#utils.read_yaml"><code class="docutils literal notranslate"><span class="pre">read_yaml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html#jinja-templates">Jinja Templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.html#layouts">Layouts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#parts">Parts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="server.html#header-html">header.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#footer-html">footer.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#navigation-html">navigation.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#list-html">list.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#form-html">form.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#pbs-html">pbs.html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="server.html#utils-html">utils.html</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client-side API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.html#for-documenters">For documenters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#forms-js">forms.js</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.html#PBSOpts"><code class="docutils literal notranslate"><span class="pre">PBSOpts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#nth_key"><code class="docutils literal notranslate"><span class="pre">nth_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#first_key"><code class="docutils literal notranslate"><span class="pre">first_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#jq_name"><code class="docutils literal notranslate"><span class="pre">jq_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#sel_name"><code class="docutils literal notranslate"><span class="pre">sel_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#jq_attr"><code class="docutils literal notranslate"><span class="pre">jq_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#sel_id"><code class="docutils literal notranslate"><span class="pre">sel_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#jq_id"><code class="docutils literal notranslate"><span class="pre">jq_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#jq_label"><code class="docutils literal notranslate"><span class="pre">jq_label()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#sel_label"><code class="docutils literal notranslate"><span class="pre">sel_label()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#sel_attr"><code class="docutils literal notranslate"><span class="pre">sel_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#update_code"><code class="docutils literal notranslate"><span class="pre">update_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#toggle_email"><code class="docutils literal notranslate"><span class="pre">toggle_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#setup_form"><code class="docutils literal notranslate"><span class="pre">setup_form()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#data-function-callbacks"><code class="docutils literal notranslate"><span class="pre">data-function</span></code> callbacks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">HPC-GUI</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server-side API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html#jinja-templates">Jinja Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client-side API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="usage.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Argonne National Laboratory.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

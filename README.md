@@ -17,7 +17,7 @@ conda env create --name hpcgui python=3.9
 conda activate hpcgui
 
 # install required packages
-conda install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0
+conda install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0 sphinx==6.1.3 sphinx-js
 ```
 
 Then, edit `.hpcgui_config` and change `conda activate balsam` to `conda activate hpcgui`.
@@ -27,7 +27,7 @@ Then, edit `.hpcgui_config` and change `conda activate balsam` to `conda activat
 I have not tested this approach at all so *caveat emptor*.
 
 ```bash
-pip install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0
+pip install fastapi==0.78.0 jinja2==3.1.2 uvicorn==0.18.3 pyyaml==6.0 sphinx==6.1.3
 ```
 
 Then, edit `run_server.sh` and remove or comment-out this line:
