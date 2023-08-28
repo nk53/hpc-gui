@@ -43,7 +43,7 @@
 </section>
 <section id="routes">
 <h2>Routes<a class="headerlink" href="#routes" title="Permalink to this heading">¶</a></h2>
-<p>Web pages are implemented by configuring a response to a browser endpoint/route. The NAMD Single Node example has the route <code class="docutils literal notranslate"><span class="pre">/namd_single</span></code>. In the simplest case, a new page can be implemented by adding a function to <code class="docutils literal notranslate"><span class="pre">main.py</span></code> withay  the <code class="code highlight python docutils literal highlight-python"><span class="nd">@app</span></code> decorator functions and returning the page’s contents.</p>
+<p>Web pages are implemented by configuring a response to a browser endpoint/route. The NAMD Single Node example has the route <code class="docutils literal notranslate"><span class="pre">/namd_single</span></code>. In the simplest case, a new page can be implemented by adding a function to <code class="docutils literal notranslate"><span class="pre">main.py</span></code> with  the <code class="code highlight python docutils literal highlight-python"><span class="nd">@app</span></code> decorator functions and returning the page’s contents.</p>
 <p>However, since there are currently no pages that require server-side processing other than Jinja template rendering, the logic of page fetching is done by reading page details from YAML configuration files <code class="docutils literal notranslate"><span class="pre">menu.yml</span></code>, <code class="docutils literal notranslate"><span class="pre">pages.yml</span></code>, and <code class="docutils literal notranslate"><span class="pre">tooltips.yml</span></code>.</p>
 <section id="home-page">
 <h3>Home page<a class="headerlink" href="#home-page" title="Permalink to this heading">¶</a></h3>
@@ -731,6 +731,7 @@ string’s value and the box’s default state is unselected.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Client-side API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="future.html">Future Development</a></li>
 </ul>
 
 <div class="relations">

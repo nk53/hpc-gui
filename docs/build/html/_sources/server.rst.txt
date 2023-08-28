@@ -14,7 +14,7 @@ HPC-GUI uses `FastAPI`_ (0.78.0), which itself uses `Starlette`_ and `Jinja`_ (3
 Routes
 ------
 
-Web pages are implemented by configuring a response to a browser endpoint/route. The NAMD Single Node example has the route ``/namd_single``. In the simplest case, a new page can be implemented by adding a function to ``main.py`` withay  the :python:`@app` decorator functions and returning the page's contents.
+Web pages are implemented by configuring a response to a browser endpoint/route. The NAMD Single Node example has the route ``/namd_single``. In the simplest case, a new page can be implemented by adding a function to ``main.py`` with  the :python:`@app` decorator functions and returning the page's contents.
 
 However, since there are currently no pages that require server-side processing other than Jinja template rendering, the logic of page fetching is done by reading page details from YAML configuration files ``menu.yml``, ``pages.yml``, and ``tooltips.yml``.
 

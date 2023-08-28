@@ -27,6 +27,7 @@ Cons:
    usage
    server
    client
+   future
 
 Indices and tables
 ==================
