@@ -58,7 +58,7 @@ sub_menu  indicates that the contained entries are a submenu
 Pages config
 ^^^^^^^^^^^^
 
-The pages configuration (``pages.yml``) maps a page/endpoint a dict that will be passed directly to the page's Jinja template as the variable ``page``. Currently, the only required property is the page title.
+The pages configuration (``pages.yml``) maps a page/endpoint to a dict that will be passed directly to the page's Jinja template as the variable ``page``. Currently, the only required property is the page title.
 
 ========  ===========
 Property  Description
