@@ -13,7 +13,7 @@ Alternative installation approaches:
 
 ```bash
 # optionally create an environment
-conda env create --name hpcgui python=3.9
+conda create --name hpcgui python=3.9
 conda activate hpcgui
 
 # install required packages
